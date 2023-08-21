@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 
-function CreateWeeklyReportPage() {
-  const { employeeId, projectId } = useParams();
+function EditWeeklyReportPage() {
+  const { reportId } = useParams();
+  const [report, setReport] = useState({});
+  const [editable, setEditable] = useState(false);
+
+  const navigate = useNavigate();
+
+
   const [employeeName, setEmployeeName] = useState("");
   const [projectName, setProjectName] = useState("");
   const [plannedCompletionDate, setPlannedCompletionDate] = useState("");
@@ -21,43 +27,63 @@ function CreateWeeklyReportPage() {
   const [teamLeaderName, setTeamLeaderName] = useState("");
 
   useEffect(() => {
-    async function fetchEmployeeAndProjectDetails() {
+    async function fetchReportDetails() {
       try {
-        // Fetch employee details by employeeId
-        const employeeResponse = await axios.get(
-          `http://localhost:8080/employees/${employeeId}`
+        // Fetch report details by reportId
+        const reportResponse = await axios.get(
+          `http://localhost:8080/reports/${reportId}`
         );
-        setEmployeeName(employeeResponse.data.name);
 
-        // Fetch project details by projectId
-        const projectResponse = await axios.get(
-          `http://localhost:8080/projects/${projectId}`
-        );
-        setProjectName(projectResponse.data.projectName);
-            
-        console.log(projectResponse.data);
+        const reportData = reportResponse.data;
+        console.log(reportData);
+        setReport(reportData);
+        // Check if the report status is IN_PROGRESS
+        if (reportData.reportStatus === "IN_PROGRESS") {
+            console.log(reportData)
+          setEmployeeName(reportData.employee.employeeName);
+          setProjectName(reportData.project.projectName);
+          setPlannedCompletionDate(
+            moment(reportData.plannedCompletionDate).format("YYYY-MM-DD")
+          );
+          setActualCompletionDate(
+            moment(reportData.actualCompletionDate).format("YYYY-MM-DD")
+          );
+          setDeliverables(reportData.deliverables);
+          setNoOfHours(reportData.noOfHours);
+          setActivity(reportData.activity);
+          setRemark(reportData.remark);
+          setExpectedActivitiesOfUpcomingWeek(
+            reportData.expectedActivitiesOfUpcomingWeek
+          );
+          setReportStatus(reportData.reportStatus);
 
-        setTeamLeaderName(projectResponse.data.teamLeader.employeeName);
+          // Set other data like team leader name
+          setTeamLeaderName(reportData.project.teamLeader.employeeName);
+        } else {
+          // Redirect or show an error message if the report status is not IN_PROGRESS
+          console.error("Cannot edit a report with status other than IN_PROGRESS");
+          navigate.push("/"); // Redirect to the main page or handle the error as needed
+        }
       } catch (error) {
-        console.error("Error fetching employee or project details:", error);
+        console.error("Error fetching report details:", error);
       }
     }
 
-    fetchEmployeeAndProjectDetails();
-  }, [employeeId, projectId]);
+    fetchReportDetails();
+  }, [reportId]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     // Construct the data object for the API call
-    const reportData = {
+    const updatedReportData = {
         employee: {
-          employeeId: employeeId,
-          employeeName: employeeName
-        },
-        project: {
-          projectId: projectId,
-          projectName: projectName
-        },
+            employeeId: report.employee.employeeId, 
+            employeeName: employeeName,
+          },
+          project: {
+            projectId: report.project.projectId, 
+            projectName: projectName,
+          },
         plannedCompletionDate: plannedCompletionDate,
         actualCompletionDate: actualCompletionDate,
         deliverables: deliverables,
@@ -70,9 +96,7 @@ function CreateWeeklyReportPage() {
 
     try {
       // Send the report data to the backend API
-      console.log("reportData")
-      console.log(reportData);
-      await axios.post(`http://localhost:8080/reports`, reportData);
+      await axios.put(`http://localhost:8080/reports/${reportId}`, updatedReportData);
     } catch (error) {
       console.error("Error creating weekly report:", error);
     }
@@ -243,11 +267,12 @@ function CreateWeeklyReportPage() {
       <button
         type="submit"
         className="bg-blue-500 text-white py-2 px-4 rounded"
+        disabled={editable}
       >
-        Create Weekly Report
+        Edit Weekly Report
       </button>
     </form>
   );
 }
 
-export default CreateWeeklyReportPage;
+export default EditWeeklyReportPage;
