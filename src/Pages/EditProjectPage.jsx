@@ -106,7 +106,14 @@ function EditProjectPage() {
   <label htmlFor="projectName" className="block font-medium text-gray-700">
     Project Name
   </label>
-  <p>{projectName}</p>
+  <input
+        type="text"
+        id="projectName"
+        name="projectName"
+        value={projectName}
+        onChange={(e) => setProjectName(e.target.value)}
+        className="mt-1 p-2 border rounded-md w-full"
+    />
 </div>
 
 
