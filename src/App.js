@@ -3,7 +3,10 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Demo from './components/Demo';
 import EmployeeTable from './components/EmployeeTable';
-
+import EmployeeView from './Pages/EmployeeView'
+import CreateProjectForm from './Pages/CreateProjectForm';
+import EditProjectPage from './Pages/EditProjectPage';
+import CreateWeeklyReportPage from './Pages/CreateWeeklyReportPage';
 
 
 function App() {
@@ -12,6 +15,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Demo />} /> 
         <Route path="/abc" element={<EmployeeTable />} /> 
+        <Route path="/e" element={<EmployeeView />} /> 
+        <Route path="/createProject" element={<CreateProjectForm />} /> 
+       <Route path="/editProject/:projectId" element={<EditProjectPage  />} /> 
+       <Route path="/createWeeklyReport/:employeeId/:projectId" element={<CreateWeeklyReportPage  />} /> 
       </Routes>
  
   );
