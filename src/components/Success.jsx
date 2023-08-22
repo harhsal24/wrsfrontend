@@ -2,51 +2,25 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Success() {
-  const myStyle = {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '25vh', // Makes the container take the full viewport height
-    padding: '10px',
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/login');
   };
 
-  const messageStyle = {
-    color: 'green',
-  };    
-  
-  const login1 = {  
-    display:'flex',
-    height:'5vh',
-    justifyContent: 'center',
-    alignItems: 'center',
-  };   
-
-  const login = {
-     backgroundColor:'green' ,
-     color: 'white',
-     padding: '10px',
-    border: 'none',
-    borderRadius: '4px',
-    magin:'5px',
-    cursor:'pointer',
-  };
-
-  const navigate=useNavigate();
-
-  const handleLoginClick=()=>{
-     navigate("/login");
-  };
-
-  return ( 
+  return (
     <>
-    <div style={myStyle}>
-      <h2 style={messageStyle}>Registration Successful</h2>     
-    </div>    
-    <div style={login1}>
-    <button style={login} onClick={handleLoginClick}>
-           Login 
-        </button>
-    </div>  
+      <div className="flex justify-center items-center h-25vh p-10">
+        <h2 className="text-green">Registration Successful</h2>
+      </div>
+      <div className="flex justify-center items-center h-5vh">
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+         type="submit" onClick={handleLoginClick}>
+  Login
+</button>
+
+      </div>
     </>
   );
 }

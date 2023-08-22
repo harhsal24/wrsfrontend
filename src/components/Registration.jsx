@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import './Registration.css'; // Import your CSS file for styling
 import { useNavigate } from 'react-router-dom';
 
-function Registration() {  
-
+function Registration() {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -75,23 +73,30 @@ function Registration() {
       console.log('Form Data:', formData);
       setIsSubmitted(true);
     }
-  };     
-
-  const navigate=useNavigate();
-
-  const handleAfterRegistration=()=>{
-      navigate('/success');
   };
-   
-  
+
+  const navigate = useNavigate();
+
+  const handleAfterRegistration = () => {
+    navigate('/success');
+  };
 
   return (
-    <div className="registration-container">
-      <form onSubmit={handleSubmit} className="registration-form">
-        <h2>Registration</h2>
-        <div className="form-group">
-          <label htmlFor="name">Name</label>
+    <div className="bg-gray-100 min-h-screen flex items-center justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+      >
+        <h2 className="text-2xl mb-4 text-center font-bold">Registration</h2>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="name"
+          >
+            Name
+          </label>
           <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             id="name"
             name="name"
@@ -99,11 +104,19 @@ function Registration() {
             onChange={handleChange}
             required
           />
-          {errors.name && <div className="error">{errors.name}</div>}
+          {errors.name && (
+            <div className="text-red-500 text-xs italic">{errors.name}</div>
+          )}
         </div>
-        <div className="form-group">
-          <label htmlFor="address">Address</label>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="address"
+          >
+            Address
+          </label>
           <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             id="address"
             name="address"
@@ -111,11 +124,19 @@ function Registration() {
             onChange={handleChange}
             required
           />
-          {errors.address && <div className="error">{errors.address}</div>}
+          {errors.address && (
+            <div className="text-red-500 text-xs italic">{errors.address}</div>
+          )}
         </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="email"
+          >
+            Email
+          </label>
           <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="email"
             id="email"
             name="email"
@@ -123,11 +144,19 @@ function Registration() {
             onChange={handleChange}
             required
           />
-          {errors.email && <div className="error">{errors.email}</div>}
+          {errors.email && (
+            <div className="text-red-500 text-xs italic">{errors.email}</div>
+          )}
         </div>
-        <div className="form-group">
-          <label htmlFor="phone">Phone</label>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="phone"
+          >
+            Phone
+          </label>
           <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="tel"
             id="phone"
             name="phone"
@@ -135,11 +164,19 @@ function Registration() {
             onChange={handleChange}
             required
           />
-          {errors.phone && <div className="error">{errors.phone}</div>}
+          {errors.phone && (
+            <div className="text-red-500 text-xs italic">{errors.phone}</div>
+          )}
         </div>
-        <div className="form-group">
-          <label htmlFor="empID">Employee ID</label>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="empID"
+          >
+            Employee ID
+          </label>
           <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             id="empID"
             name="empID"
@@ -147,11 +184,19 @@ function Registration() {
             onChange={handleChange}
             required
           />
-          {errors.empID && <div className="error">{errors.empID}</div>}
+          {errors.empID && (
+            <div className="text-red-500 text-xs italic">{errors.empID}</div>
+          )}
         </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="password"
+          >
+            Password
+          </label>
           <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="password"
             id="password"
             name="password"
@@ -159,9 +204,15 @@ function Registration() {
             onChange={handleChange}
             required
           />
-          {errors.password && <div className="error">{errors.password}</div>}
+          {errors.password && (
+            <div className="text-red-500 text-xs italic">{errors.password}</div>
+          )}
         </div>
-        <button type="submit" className="registration-button" onClick={handleAfterRegistration}>
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          onClick={handleAfterRegistration}
+        >
           Register
         </button>
       </form>

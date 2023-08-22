@@ -1,33 +1,36 @@
 import React from 'react';
-import './HomePage.css'; 
 import { useNavigate } from 'react-router-dom';
-  
 
-const HomePage = () => {   
-   const navigate =useNavigate(); 
+const HomePage = () => {
+  const navigate = useNavigate();
 
-  const handleLoginClick= ()=>{ 
-  navigate("/login");
-  };   
-
-  const handleRegisterClick=() =>{
-     navigate("/register");
+  const handleLoginClick = () => {
+    navigate("/login");
   };
+
+  const handleRegisterClick = () => {
+    navigate("/register");
+  };
+
   return (
-   <>   
-        <div className="container">
-        <h2 className="h">Weekly Report Submission</h2>  
-        <div className='login'>
-        <button className="login1" onClick={handleLoginClick}>
-           Login 
-        </button>
-        <button className="register1" onClick={handleRegisterClick}>
-           Registration 
-        </button>
-        
+    <>
+      <div className="bg-aliceblue min-h-screen flex flex-col items-center justify-center">
+        <h2 className="text-3xl font-bold mb-4">Weekly Report Submission</h2>
+        <div className='flex space-x-5'>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none"
+            onClick={handleLoginClick}
+          >
+            Login
+          </button>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none"
+            onClick={handleRegisterClick}
+          >
+            Registration
+          </button>
         </div>
-        </div>
-    
+      </div>
     </>
   );
 };
