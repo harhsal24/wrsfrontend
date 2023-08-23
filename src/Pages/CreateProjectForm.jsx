@@ -87,7 +87,6 @@ function CreateProjectForm({ onSubmit }) {
         />
       </div>
 
-      {/* ... (other form fields) */}
       
       <div className="mb-4">
         <label className="block font-medium text-gray-700">Team Leader</label>

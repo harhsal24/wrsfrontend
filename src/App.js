@@ -9,6 +9,7 @@ import EditProjectPage from './Pages/EditProjectPage';
 import CreateWeeklyReportPage from './Pages/CreateWeeklyReportPage';
 import EditWeeklyReportPage from './Pages/EditWeeklyReportPage';
 import Login from './Pages/Login';
+import Registration from './Pages/Registration';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
        <Route path="/editProject/:projectId" element={<EditProjectPage  />} /> 
        <Route path="/createWeeklyReport/:employeeId/:projectId" element={<CreateWeeklyReportPage  />} /> 
        <Route  path="/editWeeklyReport/:reportId" element={<EditWeeklyReportPage  />} />
+       <Route  path="/register" element={<Registration  />} />
       </Routes>
  
   );
