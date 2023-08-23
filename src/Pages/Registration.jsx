@@ -15,7 +15,7 @@ const Registration = () => {
   const [submitted, setSubmitted] = useState(false);
   const [token, setToken] = useState("");
 
-navigator=useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchAllEmployees() {
@@ -76,8 +76,8 @@ navigator=useNavigate();
         }
       );
       setToken(response.data.token);
-      if (response.data.success) {
-        navigator.push("/dashboard");
+      if (response.status==200) {
+        navigate("/dashboard");
       }
       setErrorMessage("");
       console.log("Registration successful:", response.data);

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [login, setLogin] = useState('');
@@ -7,13 +8,14 @@ const Login = () => {
   const [token, setToken] = useState('')
   const [errorMessage, setErrorMessage] = useState('');
 
+  const navigate = useNavigate();
   const handleLogin = async () => {
     try {
         console.log( { login, password })
       const response = await axios.post('http://localhost:8080/login', { login, password });
           setToken(response.data.token)  
-          if (response.data.success) {
-            navigator.push("/dashboard");
+          if (response.status==200) {
+            navigate("/dashboard");
           }   
       console.log('Logged in successfully:', response.data);
     } catch (error) {
