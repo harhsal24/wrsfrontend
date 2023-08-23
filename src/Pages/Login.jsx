@@ -11,7 +11,10 @@ const Login = () => {
     try {
         console.log( { login, password })
       const response = await axios.post('http://localhost:8080/login', { login, password });
-          setToken(response.data.token)     
+          setToken(response.data.token)  
+          if (response.data.success) {
+            navigator.push("/dashboard");
+          }   
       console.log('Logged in successfully:', response.data);
     } catch (error) {
       setErrorMessage('Invalid login or password');

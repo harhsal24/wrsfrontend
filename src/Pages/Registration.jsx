@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
+import { useNavigate } from "react-router-dom";
 const Registration = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -13,6 +14,8 @@ const Registration = () => {
   const [allEmployeesList, setAllEmployeesList] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [token, setToken] = useState("");
+
+navigator=useNavigate();
 
   useEffect(() => {
     async function fetchAllEmployees() {
@@ -73,6 +76,9 @@ const Registration = () => {
         }
       );
       setToken(response.data.token);
+      if (response.data.success) {
+        navigator.push("/dashboard");
+      }
       setErrorMessage("");
       console.log("Registration successful:", response.data);
     } catch (error) {
