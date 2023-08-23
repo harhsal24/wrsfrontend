@@ -8,6 +8,7 @@ import CreateProjectForm from './Pages/CreateProjectForm';
 import EditProjectPage from './Pages/EditProjectPage';
 import CreateWeeklyReportPage from './Pages/CreateWeeklyReportPage';
 import EditWeeklyReportPage from './Pages/EditWeeklyReportPage';
+import Login from './Pages/Login';
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
    
       <Routes>
         <Route path="/" element={<Demo />} /> 
+        <Route path="/login" element={<Login />} /> 
         <Route path="/abc" element={<EmployeeTable />} /> 
         <Route path="/e" element={<EmployeeView />} /> 
         <Route path="/createProject" element={<CreateProjectForm />} /> 

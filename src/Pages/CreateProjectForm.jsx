@@ -15,6 +15,7 @@ function CreateProjectForm({ onSubmit }) {
     async function fetchRegularEmployees() {
       try {
         const response = await axios.get('http://localhost:8080/employees/byRole/REGULAR_EMPLOYEE');
+        console.log(response)
         const options = response.data.map(employee => ({
           value: employee.employeeId,
           label: employee.employeeName

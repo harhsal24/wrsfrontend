@@ -1,28 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
-import moment from "moment";
+import { useParams } from "react-router-dom";
 
 function EditWeeklyReportPage() {
   const { reportId } = useParams();
-  const [report, setReport] = useState({});
-  const [editable, setEditable] = useState(false);
-
-  const navigate = useNavigate();
-
-
   const [employeeName, setEmployeeName] = useState("");
   const [projectName, setProjectName] = useState("");
-  const [plannedCompletionDate, setPlannedCompletionDate] = useState("");
-  const [actualCompletionDate, setActualCompletionDate] = useState("");
-  const [deliverables, setDeliverables] = useState("");
-  const [noOfHours, setNoOfHours] = useState("");
-  const [activity, setActivity] = useState("");
+  const [reportDetails, setReportDetails] = useState([]);
   const [remark, setRemark] = useState("");
-  const [
-    expectedActivitiesOfUpcomingWeek,
-    setExpectedActivitiesOfUpcomingWeek,
-  ] = useState("");
+  const [expectedActivitiesOfUpcomingWeek, setExpectedActivitiesOfUpcomingWeek] = useState("");
   const [reportStatus, setReportStatus] = useState("IN_PROGRESS");
   const [teamLeaderName, setTeamLeaderName] = useState("");
 
@@ -30,40 +16,18 @@ function EditWeeklyReportPage() {
     async function fetchReportDetails() {
       try {
         // Fetch report details by reportId
-        const reportResponse = await axios.get(
-          `http://localhost:8080/reports/${reportId}`
-        );
-
+        const reportResponse = await axios.get(`http://localhost:8080/reports/${reportId}`);
         const reportData = reportResponse.data;
-        console.log(reportData);
-        setReport(reportData);
-        // Check if the report status is IN_PROGRESS
-        if (reportData.reportStatus === "IN_PROGRESS") {
-            console.log(reportData)
-          setEmployeeName(reportData.employee.employeeName);
-          setProjectName(reportData.project.projectName);
-          setPlannedCompletionDate(
-            moment(reportData.plannedCompletionDate).format("YYYY-MM-DD")
-          );
-          setActualCompletionDate(
-            moment(reportData.actualCompletionDate).format("YYYY-MM-DD")
-          );
-          setDeliverables(reportData.deliverables);
-          setNoOfHours(reportData.noOfHours);
-          setActivity(reportData.activity);
-          setRemark(reportData.remark);
-          setExpectedActivitiesOfUpcomingWeek(
-            reportData.expectedActivitiesOfUpcomingWeek
-          );
-          setReportStatus(reportData.reportStatus);
 
-          // Set other data like team leader name
-          setTeamLeaderName(reportData.project.teamLeader.employeeName);
-        } else {
-          // Redirect or show an error message if the report status is not IN_PROGRESS
-          console.error("Cannot edit a report with status other than IN_PROGRESS");
-          navigate.push("/"); // Redirect to the main page or handle the error as needed
-        }
+        setEmployeeName(reportData.employee.employeeName);
+        setProjectName(reportData.project.projectName);
+        setReportDetails(reportData.reportDetailsList);
+        setRemark(reportData.remark);
+        setExpectedActivitiesOfUpcomingWeek(reportData.expectedActivitiesOfUpcomingWeek);
+        setReportStatus(reportData.reportStatus);
+
+        // Assuming that reportData.project.teamLeader exists
+        setTeamLeaderName(reportData.project.teamLeader.employeeName);
       } catch (error) {
         console.error("Error fetching report details:", error);
       }
@@ -72,33 +36,57 @@ function EditWeeklyReportPage() {
     fetchReportDetails();
   }, [reportId]);
 
+  const handleReportDetailsChange = (index, field, value) => {
+    const updatedReportDetails = [...reportDetails];
+    updatedReportDetails[index][field] = value;
+    setReportDetails(updatedReportDetails);
+  };
+
+
+  
+  const addReportDetail = () => {
+    // Check if any of the input fields in the current report detail are empty
+    const isCurrentReportDetailEmpty =
+      reportDetails.some(
+        (detail) =>
+          !detail.plannedCompletionDate ||
+          !detail.actualCompletionDate ||
+          !detail.deliverables ||
+          !detail.noOfHours ||
+          !detail.activity
+      );
+  
+    // If any field is empty, prevent adding new report detail
+    if (isCurrentReportDetailEmpty) {
+      alert("Please fill in all fields for the current report detail.");
+      return;
+    }
+  
+    // Add a new empty report detail to the array
+    setReportDetails([...reportDetails, {}]);
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Construct the data object for the API call
+
     const updatedReportData = {
-        employee: {
-            employeeId: report.employee.employeeId, 
-            employeeName: employeeName,
-          },
-          project: {
-            projectId: report.project.projectId, 
-            projectName: projectName,
-          },
-        plannedCompletionDate: plannedCompletionDate,
-        actualCompletionDate: actualCompletionDate,
-        deliverables: deliverables,
-        noOfHours: noOfHours,
-        activity: activity,
-        remark: remark,
-        expectedActivitiesOfUpcomingWeek: expectedActivitiesOfUpcomingWeek,
-        reportStatus: reportStatus
-      };
+      employee: {
+        employeeName: employeeName,
+      },
+      project: {
+        projectName: projectName,
+      },
+      reportDetailsList: reportDetails,
+      remark: remark,
+      expectedActivitiesOfUpcomingWeek: expectedActivitiesOfUpcomingWeek,
+      reportStatus: reportStatus,
+    };
 
     try {
-      // Send the report data to the backend API
+      // Send the updated report data to the backend API
       await axios.put(`http://localhost:8080/reports/${reportId}`, updatedReportData);
     } catch (error) {
-      console.error("Error creating weekly report:", error);
+      console.error("Error updating weekly report:", error);
     }
   };
 
@@ -131,6 +119,7 @@ function EditWeeklyReportPage() {
         />
       </div>
 
+      {/* Team Leader Display */}
       <div className="mb-4">
         <label
           htmlFor="teamLeaderName"
@@ -142,75 +131,115 @@ function EditWeeklyReportPage() {
       </div>
 
       <div className="mb-4">
-        <label
-          htmlFor="plannedCompletionDate"
-          className="block font-medium text-gray-700"
-        >
-          Planned Completion Date
-        </label>
-        <input
-          type="date"
-          id="plannedCompletionDate"
-          name="plannedCompletionDate"
-          value={plannedCompletionDate}
-          onChange={(e) => setPlannedCompletionDate(e.target.value)}
-          className="mt-1 p-2 border rounded-md w-full"
-        />
-      </div>
-      <div className="mb-4">
-  <label htmlFor="actualCompletionDate" className="block font-medium text-gray-700">
-    Actual Completion Date
+  <label
+    htmlFor="reportDetailsList"
+    className="block font-medium text-gray-700"
+  >
+    Report Details List
   </label>
-  <input
-    type="date"
-    id="actualCompletionDate"
-    name="actualCompletionDate"
-    value={actualCompletionDate}
-    onChange={(e) => setActualCompletionDate(e.target.value)}
-    className="mt-1 p-2 border rounded-md w-full"
-  />
-</div>
+  {reportDetails.map((detail, index) => (
+    <div key={index} className="mt-2 p-2 border rounded-md">
+      <p>Row {index + 1}</p>
+      <label
+        htmlFor={`deliverables_${index}`}
+        className="block font-medium text-gray-700"
+      >
+        Deliverables
+      </label>
+      <input
+        type="text"
+        id={`deliverables_${index}`}
+        name={`deliverables_${index}`}
+        value={detail.deliverables || ""}
+        onChange={(e) =>
+          handleReportDetailsChange(index, "deliverables", e.target.value)
+        }
+        className="mt-1 p-2 border rounded-md w-full"
+      />
 
-<div className="mb-4">
-  <label htmlFor="deliverables" className="block font-medium text-gray-700">
-    Deliverables
-  </label>
-  <input
-    type="text"
-    id="deliverables"
-    name="deliverables"
-    value={deliverables}
-    onChange={(e) => setDeliverables(e.target.value)}
-    className="mt-1 p-2 border rounded-md w-full"
-  />
-</div>
+      <label
+        htmlFor={`plannedCompletionDate_${index}`}
+        className="block font-medium text-gray-700"
+      >
+        Planned Completion Date
+      </label>
+      <input
+        type="date"
+        id={`plannedCompletionDate_${index}`}
+        name={`plannedCompletionDate_${index}`}
+        value={detail.plannedCompletionDate || ""}
+        onChange={(e) =>
+          handleReportDetailsChange(
+            index,
+            "plannedCompletionDate",
+            e.target.value
+          )
+        }
+        className="mt-1 p-2 border rounded-md w-full"
+      />
 
-<div className="mb-4">
-  <label htmlFor="noOfHours" className="block font-medium text-gray-700">
-    Number of Hours
-  </label>
-  <input
-    type="number"
-    id="noOfHours"
-    name="noOfHours"
-    value={noOfHours}
-    onChange={(e) => setNoOfHours(e.target.value)}
-    className="mt-1 p-2 border rounded-md w-full"
-  />
-</div>
+      <label
+        htmlFor={`actualCompletionDate_${index}`}
+        className="block font-medium text-gray-700"
+      >
+        Actual Completion Date
+      </label>
+      <input
+        type="date"
+        id={`actualCompletionDate_${index}`}
+        name={`actualCompletionDate_${index}`}
+        value={detail.actualCompletionDate || ""}
+        onChange={(e) =>
+          handleReportDetailsChange(
+            index,
+            "actualCompletionDate",
+            e.target.value
+          )
+        }
+        className="mt-1 p-2 border rounded-md w-full"
+      />
 
-<div className="mb-4">
-  <label htmlFor="activity" className="block font-medium text-gray-700">
-    Activity
-  </label>
-  <input
-    type="text"
-    id="activity"
-    name="activity"
-    value={activity}
-    onChange={(e) => setActivity(e.target.value)}
-    className="mt-1 p-2 border rounded-md w-full"
-  />
+      <label
+        htmlFor={`noOfHours_${index}`}
+        className="block font-medium text-gray-700"
+      >
+        Number of Hours
+      </label>
+      <input
+        type="number"
+        id={`noOfHours_${index}`}
+        name={`noOfHours_${index}`}
+        value={detail.noOfHours || ""}
+        onChange={(e) =>
+          handleReportDetailsChange(index, "noOfHours", e.target.value)
+        }
+        className="mt-1 p-2 border rounded-md w-full"
+      />
+
+      <label
+        htmlFor={`activity_${index}`}
+        className="block font-medium text-gray-700"
+      >
+        Activity
+      </label>
+      <input
+        type="text"
+        id={`activity_${index}`}
+        name={`activity_${index}`}
+        value={detail.activity || ""}
+        onChange={(e) =>
+          handleReportDetailsChange(index, "activity", e.target.value)
+        }
+        className="mt-1 p-2 border rounded-md w-full"
+      />
+    </div>
+  ))}
+  <button
+    onClick={addReportDetail}
+    className="mt-2 bg-blue-500 text-white py-1 px-2 rounded"
+  >
+    Add Report Detail
+  </button>
 </div>
 
 
@@ -253,26 +282,26 @@ function EditWeeklyReportPage() {
           Report Status
         </label>
         <select
-  id="reportStatus"
-  name="reportStatus"
-  value={reportStatus}
-  onChange={(e) => setReportStatus(e.target.value)}
-  className="mt-1 p-2 border rounded-md w-full"
->
-  <option value="IN_PROGRESS">IN_PROGRESS</option>
-  <option value="APPROVED">APPROVED</option>
-</select>
+          id="reportStatus"
+          name="reportStatus"
+          value={reportStatus}
+          onChange={(e) => setReportStatus(e.target.value)}
+          className="mt-1 p-2 border rounded-md w-full"
+        >
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="APPROVED">APPROVED</option>
+        </select>
       </div>
 
       <button
         type="submit"
         className="bg-blue-500 text-white py-2 px-4 rounded"
-        disabled={editable}
       >
-        Edit Weekly Report
+        Update Weekly Report
       </button>
     </form>
   );
+
 }
 
 export default EditWeeklyReportPage;
