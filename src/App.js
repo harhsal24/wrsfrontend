@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import EmployeeTable from './components/EmployeeTable';
+
 import HomePage from './components/HomePage/HomePage';
 import EmployeeLogin from './components/LoginPage/EmployeeLogin';
 import Registration from './components/RegistrationPage/Registration';
@@ -12,8 +13,10 @@ import EmployeeProjectTable from './components/Employee/EmployeeProjectTable';
 
 
 
+
 function App() {
   return (
+
       <Routes>    
         
         <Route path="/" element ={<HomePage/>}/>   
@@ -25,6 +28,7 @@ function App() {
         <Route path="/employee-details" element={<EmployeeDetailPrevious/>}/> 
         <Route path="/employeeform" element={<EmployeeForm/>}/> 
         <Route path="/employee-project-table" element={<EmployeeProjectTable/>}/>
+
       </Routes>
  
   );
