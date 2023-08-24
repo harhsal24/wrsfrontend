@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
   const navigate = useNavigate();
 
-  const handleLoginClick = () => {
-    navigate("/login");
+  const handleEmployeeLoginClick = () => {
+    navigate("/employee-login");
   };
 
   const handleRegisterClick = () => {
-    navigate("/register");
+    navigate("/registration");
   };
 
   return (
@@ -19,9 +19,9 @@ const HomePage = () => {
         <div className='flex space-x-5'>
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none"
-            onClick={handleLoginClick}
+            onClick={handleEmployeeLoginClick}
           >
-            Login
+            Employee Login
           </button>
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none"

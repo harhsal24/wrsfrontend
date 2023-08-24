@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Login() {
+function EmployeeLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -12,14 +12,14 @@ function Login() {
     console.log('Username:', username);
     console.log('Password:', password);
 
-    navigate('/employeetable');
+    navigate("/reportinterface");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-1/4"
       >
         <h2 className="text-2xl mb-4 text-center font-bold">Login</h2>
         <div className="mb-4">
@@ -57,7 +57,8 @@ function Login() {
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"  
+            onSubmit={handleSubmit}
           >
             Login
           </button>
@@ -67,4 +68,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default EmployeeLogin;

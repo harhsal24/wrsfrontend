@@ -5,7 +5,7 @@ function Success() {
   const navigate = useNavigate();
 
   const handleLoginClick = () => {
-    navigate('/login');
+    navigate('/employee-login');
   };
 
   return (
