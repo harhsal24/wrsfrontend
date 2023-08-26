@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import baseUrl from './config'; 
 const Login = () => {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
@@ -12,7 +12,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
         console.log( { login, password })
-      const response = await axios.post('http://localhost:8080/login', { login, password });
+      const response = await axios.post(`${baseUrl}/login`, { login, password });
           setToken(response.data.token)  
           if (response.status==200) {
             navigate("/dashboard");

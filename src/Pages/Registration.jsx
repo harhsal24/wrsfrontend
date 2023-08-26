@@ -28,7 +28,7 @@ const Registration = () => {
           value: employee.employeeId,
           label: employee.employeeName,
         }));
-        setAllEmployeesList(options);
+       console.log(options);
       } catch (error) {
         console.error("Error fetching regular employees:", error);
       }
