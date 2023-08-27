@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import EmployeeTable from './components/EmployeeTable';
+import EmployeeTable from './Pages/EmployeeTable';
 import Login from "./Pages/Login";
 import HomePage from './components/HomePage/HomePage';
 import EmployeeLogin from './components/LoginPage/EmployeeLogin';
@@ -26,7 +26,7 @@ function App() {
         <Route path="/" element ={<HomePage/>}/>   
         <Route path="/employee-login" element={<EmployeeLogin/>}/> 
         <Route path="/register" element={<Registration/>}/>     
-        <Route path="/employeetable" element={<EmployeeTable />} />  
+        <Route path="/test" element={<EmployeeTable />} />  
         <Route path="/success" element={<Success/>}/> 
         <Route path="/reportinterface" element={<ReportInterface/>}/> 
         <Route path="/employee-details" element={<EmployeeDetailPrevious/>}/> 

@@ -16,22 +16,14 @@ function CreateWeeklyReportPage() {
   const [reportStatus, setReportStatus] = useState("IN_PROGRESS");
   const [teamLeaderName, setTeamLeaderName] = useState("");
   
-  // const [reportDetails, setReportDetails] = useState([]);
+  const [reportDetails, setReportDetails] = useState([]);
   const [deliverables, setDeliverables] = useState("");
   const [noOfHours, setNoOfHours] = useState("");
   const [activity, setActivity] = useState("");
   const [plannedCompletionDate, setPlannedCompletionDate] = useState();
   const [actualCompletionDate, setActualCompletionDate] = useState();
+ 
 
-  const [reportDetails, setReportDetails] = useState([
-    {
-      deliverables: "",
-      noOfHours: "",
-      activity: "",
-      plannedCompletionDate: "",
-      actualCompletionDate: "",
-    },
-  ]);
   
  
  
@@ -63,20 +55,20 @@ function CreateWeeklyReportPage() {
 
   const addReportDetail = () => {
     // Check if any of the input fields in the current report detail are empty
-    // const isCurrentReportDetailEmpty = reportDetails.some(
-    //   (detail) =>
-    //     !detail.plannedCompletionDate ||
-    //     !detail.actualCompletionDate ||
-    //     !detail.deliverables ||
-    //     !detail.noOfHours ||
-    //     !detail.activity
-    // );
+    const isCurrentReportDetailEmpty = reportDetails.some(
+      (detail) =>
+        !detail.plannedCompletionDate ||
+        !detail.actualCompletionDate ||
+        !detail.deliverables ||
+        !detail.noOfHours ||
+        !detail.activity
+    );
 
-    // // If any field is empty, prevent adding new report detail
-    // if (isCurrentReportDetailEmpty) {
-    //   alert("Please fill in all fields for the current report detail.");
-    //   return;
-    // }
+    // If any field is empty, prevent adding new report detail
+    if (isCurrentReportDetailEmpty) {
+      alert("Please fill in all fields for the current report detail.");
+      return;
+    }
 
     // Initialize a new report detail object with input values
     const newReportDetail = {
@@ -98,12 +90,7 @@ function CreateWeeklyReportPage() {
     setPlannedCompletionDate("");
     setActualCompletionDate("");
   };
-  const handleDetailChange = (index, property, value) => {
-    const updatedDetails = [...reportDetails];
-    updatedDetails[index][property] = value;
-    setReportDetails(updatedDetails);
-  };
-  
+
 
   const removeReportDetail = (indexToRemove) => {
     const updatedReportDetails = reportDetails.filter(
@@ -210,9 +197,11 @@ function CreateWeeklyReportPage() {
           >
             Report Details List
           </label>
+        {/* show data */}
           {reportDetails.map((detail,index) => (
             <div key={crypto.randomUUID()}>
               <div className="mt-3 mb-1 flex gap-6  items-baseline">
+                
                 <p className="text-xl text-gray-700">Row {index + 1}</p>
                 <button
                   onClick={() => removeReportDetail(index)}
@@ -230,11 +219,12 @@ function CreateWeeklyReportPage() {
                     Deliverables
                   </label>
                   <input
-                    type="text"
-                    id={`deliverables_${index}`}
-                    name={`deliverables_${index}`}
+                  id={`deliverables_${index}`}
+                  name={`deliverables_${index}`}
+                    type="text" 
                     value={detail.deliverables}
-                    onChange={(e) => handleDetailChange(index, "deliverables", e.target.value)}
+                    disabled
+                    readOnly
                     className="mt-1 p-2 border rounded-md w-full"
                   />
                 </div>
@@ -254,8 +244,9 @@ function CreateWeeklyReportPage() {
                     type="date"
                     id={`plannedCompletionDate_${index}`}
                     name={`plannedCompletionDate_${index}`}
-                    value={plannedCompletionDate}
-                    onChange={(e) => setPlannedCompletionDate(e.target.value)}
+                    value={detail.plannedCompletionDate}
+                    disabled
+                    readOnly
                     className="mt-1 p-2 border rounded-md w-full"
                   />
                 </div>
@@ -271,10 +262,9 @@ function CreateWeeklyReportPage() {
                     type="date"
                     id={`actualCompletionDate_${index}`}
                     name={`actualCompletionDate_${index}`}
-                    value={actualCompletionDate}
-                    onChange={(e) =>
-                     setActualCompletionDate(e.target.value)
-                    }
+                    value={detail.actualCompletionDate}
+                    disabled
+                    readOnly
                     className="mt-1 p-2 border rounded-md w-full"
                   />
                 </div>
@@ -289,8 +279,9 @@ function CreateWeeklyReportPage() {
                     type="number"
                     id={`noOfHours_${index}`}
                     name={`noOfHours_${index}`}
-                    value={noOfHours}
-                    onChange={(e) => setNoOfHours(e.target.value)}
+                    value={detail.noOfHours}
+                    disabled
+                    readOnly
                     className="mt-1 p-2 border rounded-md w-full md:w-[158px]"
                   />
                 </div>
@@ -307,8 +298,9 @@ function CreateWeeklyReportPage() {
                     type="text"
                     id={`activity_${index}`}
                     name={`activity_${index}`}
-                    value={activity}
-                    onChange={(e) => setActivity(e.target.value)}
+                    value={detail.activity}
+                    disabled
+                    readOnly
                     className="mt-1 p-2 border rounded-md w-full "
                   />
                 </div>
@@ -316,16 +308,113 @@ function CreateWeeklyReportPage() {
             </div>
           ))}
 
-          <div className="flex items-center justify-center">
-            <button
-              onClick={addReportDetail}
-              className="my-4 bg-blue-500 text-white py-1 px-2 rounded"
-            >
-              Tap to Add You'r Report Detail here
-            </button>
-          </div>
+         
+          
         </div>
       </div>
+
+
+            {/* add report detail from here */}
+      <div >
+              <div className="mt-5 mb-4">
+                <div className="p-2 border rounded-md">
+                  <label
+                    htmlFor={`deliverables`}
+                    className="block font-medium text-gray-700"
+                  >
+                    Deliverables
+                  </label>
+                  <input
+                    type="text"
+                    id={`deliverables`}
+                    name={`deliverables`}
+                    value={deliverables}
+                    onChange={(e)=>setDeliverables(e.target.value)}
+                    className="mt-1 p-2 border rounded-md w-full"
+                  />
+                </div>
+              </div>
+              <div
+                className="mt-2 p-2 border rounded-md md:flex md:items-center md:gap-6  md:justify-evenly"
+              >
+                <div className="my-4">
+                  <label
+                    htmlFor={`plannedCompletionDate`}
+                    className="block font-medium text-gray-700"
+                  >
+                    Planned Completion Date
+                  </label>
+                  <input
+                    type="date"
+                    id={`plannedCompletionDate`}
+                    name={`plannedCompletionDate`}
+                    value={plannedCompletionDate}
+                    onChange={(e) => setPlannedCompletionDate(e.target.value)}
+                    className="mt-1 p-2 border rounded-md w-full"
+                  />
+                </div>
+
+                <div className="my-4">
+                  <label
+                    htmlFor={`actualCompletionDate`}
+                    className="block font-medium text-gray-700"
+                  >
+                    Actual Completion Date
+                  </label>
+                  <input
+                    type="date"
+                    id={`actualCompletionDate`}
+                    name={`actualCompletionDate`}
+                    value={actualCompletionDate}
+                    onChange={(e) =>
+                     setActualCompletionDate(e.target.value)
+                    }
+                    className="mt-1 p-2 border rounded-md w-full"
+                  />
+                </div>
+                <div className=" ">
+                  <label
+                    htmlFor={`noOfHours`}
+                    className="block font-medium text-gray-700  w-28"
+                  >
+                    No of Hours
+                  </label>
+                  <input
+                    type="number"
+                    id={`noOfHours`}
+                    name={`noOfHours`}
+                    value={noOfHours}
+                    onChange={(e) => setNoOfHours(e.target.value)}
+                    className="mt-1 p-2 border rounded-md w-full md:w-[158px]"
+                  />
+                </div>
+              </div>
+              <div className="mt-5 p-2 border rounded-md ">
+                <div className="mx-5 my-4 md:flex md:items-center justify-start">
+                  <label
+                    htmlFor={`activity`}
+                    className="block font-medium text-gray-700 w-28 md:w-20 "
+                  >
+                    Activity
+                  </label>
+                  <input
+                    type="text"
+                    id={`activity`}
+                    name={`activity`}
+                    value={activity}
+                    onChange={(e) => setActivity(e.target.value)}
+                    className="mt-1 p-2 border rounded-md w-full "
+                  />
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={addReportDetail}
+              
+              className="mt-4 bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition duration-300"
+            >
+              Add Report Detail 
+            </button>
 
       <div className="mb-4">
         <label htmlFor="remark" className="block font-medium text-gray-700">
@@ -379,7 +468,8 @@ function CreateWeeklyReportPage() {
 
       <button
         type="submit"
-        className="bg-blue-500 text-white py-2 px-4 rounded"
+        className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
+        
       >
         Create Weekly Report
       </button>
