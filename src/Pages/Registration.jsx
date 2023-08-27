@@ -11,7 +11,7 @@ const Registration = () => {
   const [gender, setGender] = useState("");
   const [managerId, setManagerId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [allEmployeesList, setAllEmployeesList] = useState("");
+  const [allEmployeesList, setAllEmployeesList] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [token, setToken] = useState("");
 
@@ -76,22 +76,30 @@ const Registration = () => {
         }
       );
       setToken(response.data.token);
+     
       if (response.status==200) {
         navigate("/dashboard");
       }
       setErrorMessage("");
       console.log("Registration successful:", response.data);
     } catch (error) {
-      setErrorMessage("Registration failed");
+      if (error.response && error.response.status === 400) {
+        setErrorMessage("Registration failed: User with the same email already exists");
+      }
+      else{
+        setErrorMessage("Registration failed");
+      }
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-md w-full mx-auto p-8 bg-white shadow-md rounded-md">
+      <div className="max-w-md w-full mx-auto p-8 bg-white shadow-md rounded-md md:max-w-2xl xl:max-w-3xl">
         <h2 className="text-2xl font-semibold mb-4">Registration</h2>
         {submitted && errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
-        <div className={`mb-4 ${!firstName ? "has-error" : ""}`}>
+        <div className="md:flex md:items-center md:justify-start md:gap-5">
+
+        <div className={`mb-4 md:w-1/2 ${!firstName ? "has-error" : ""}`}>
           <label htmlFor="firstName" className="block mb-1 font-medium">
             First Name
           </label>
@@ -110,7 +118,7 @@ const Registration = () => {
           )}
         </div>
 
-        <div className={`mb-4 ${submitted && !lastName ? "has-error" : ""}`}>
+        <div className={`mb-4 md:w-1/2 ${submitted && !lastName ? "has-error" : ""}`}>
           <label htmlFor="lastName" className="block mb-1 font-medium">
             Last Name
           </label>
@@ -128,7 +136,11 @@ const Registration = () => {
             <p className="text-red-500">Please enter your last name</p>
           )}
         </div>
-        <div className={`mb-4 ${ submitted && !login ? "has-error" : ""}`}>
+        </div>
+
+
+
+        <div className={`mb-4  ${ submitted && !login ? "has-error" : ""}`}>
           <label htmlFor="login" className="block mb-1 font-medium">
             Email
           </label>
@@ -164,53 +176,119 @@ const Registration = () => {
           <label htmlFor="role" className="block mb-1 font-medium">
             Role
           </label>
-          <select
-            id="role"
-            className={`w-full p-2 border rounded-md focus:ring focus:ring-blue-300 ${
-                submitted && !role ? "border-red-500" : ""
-            }`}
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            required
-          >
-            <option value="">Select Role</option>
-            <option value="SUPER_ADMIN">Super Admin</option>
-            <option value="TEAM_LEADER">Team Leader</option>
-            <option value="REGULAR_EMPLOYEE">Regular Employee</option>
-          </select>
-          {submitted && !role && <p className="text-red-500">Please select a role</p>}
+
+
+          <div className="flex items-center">
+            <label className="mr-4">
+              <input
+                type="radio"
+                name="role"
+                value="SUPER_ADMIN"
+                checked={role === 'SUPER_ADMIN'}
+                onChange={() => setRole('SUPER_ADMIN')}
+                className={`mr-1 ${
+                  submitted && !role ? 'border-red-500' : 'border-blue-300'
+                }`}
+              />
+              Super Admin
+            </label>
+            <label className="mr-4">
+              <input
+                type="radio"
+                name="role"
+                value="TEAM_LEADER"
+                checked={role === 'TEAM_LEADER'}
+                onChange={() => setRole('TEAM_LEADER')}
+                className={`mr-1 ${
+                  submitted && !role ? 'border-red-500' : 'border-blue-300'
+                }`}
+              />
+              Team Leader
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="role"
+                value="REGULAR_EMPLOYEE"
+                checked={role === 'REGULAR_EMPLOYEE'}
+                onChange={() => setRole('REGULAR_EMPLOYEE')}
+                className={`mr-1 ${
+                  submitted && !role ? 'border-red-500' : 'border-blue-300'
+                }`}
+              />
+              Regular Employee
+            </label>
+          </div>
+          {submitted && !role && (
+            <p className="text-red-500">Please select a role</p>
+          )}
         </div>
+
 
         <div className={`mb-4 ${!gender ? "has-error" : ""}`}>
           <label htmlFor="gender" className="block mb-1 font-medium">
             Gender
           </label>
-          <select
-            id="gender"
-            className={`w-full p-2 border rounded-md focus:ring focus:ring-blue-300 ${
-                submitted && !gender ? "border-red-500" : ""
-            }`}
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-            required
-          >
-            <option value="">Select Gender</option>
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
-            <option value="OTHERS">Others</option>
-          </select>
-          {submitted && !gender && <p className="text-red-500">Please select a gender</p>}
+        
+
+          <div className="flex items-center">
+            <label className="mr-4">
+              <input
+                type="radio"
+                name="gender"
+                value="MALE"
+                checked={gender === 'MALE'}
+                onChange={() => setGender('MALE')}
+                className={`mr-1 ${
+                  submitted && !gender ? 'border-red-500' : 'border-blue-300'
+                }`}
+              />
+              Male
+            </label>
+            <label className="mr-4">
+              <input
+                type="radio"
+                name="gender"
+                value="FEMALE"
+                checked={gender === 'FEMALE'}
+                onChange={() => setGender('FEMALE')}
+                className={`mr-1 ${
+                  submitted && !gender ? 'border-red-500' : 'border-blue-300'
+                }`}
+              />
+              Female
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="OTHERS"
+                checked={gender === 'OTHERS'}
+                onChange={() => setGender('OTHERS')}
+                className={`mr-1 ${
+                  submitted && !gender ? 'border-red-500' : 'border-blue-300'
+                }`}
+              />
+              Others
+            </label>
+          </div>
+          {submitted && !gender && (
+            <p className="text-red-500">Please select a gender</p>
+          )}
         </div>
+
+
+        
 
         <div className={`mb-4 ${!managerId ? "has-error" : ""}`}>
           <label className="block font-medium text-gray-700">
             Selected Manager
           </label>
           <Select
-            options={allEmployeesList}
-            value={managerId}
-            onChange={setManagerId}
-          />
+     options={[...allEmployeesList, { value: null, label: "None" }]}
+    value={managerId}
+    onChange={setManagerId}
+  />
           { submitted && !managerId && (
             <p className="text-red-500">Please select a manager</p>
           )}

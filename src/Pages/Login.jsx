@@ -15,7 +15,7 @@ const Login = () => {
       const response = await axios.post('http://localhost:8080/login', { login, password });
           setToken(response.data.token)  
           if (response.status==200) {
-            navigate("/dashboard");
+            navigate(`/dashboard/${response.data.empId}`);
           }   
       console.log('Logged in successfully:', response.data);
     } catch (error) {

@@ -66,6 +66,11 @@ function EditWeeklyReportPage() {
     setReportDetails([...reportDetails, {}]);
   };
 
+  const removeReportDetail = (indexToRemove) => {
+    const updatedReportDetails = reportDetails.filter((_, index) => index !== indexToRemove);
+    setReportDetails(updatedReportDetails);
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -84,14 +89,16 @@ function EditWeeklyReportPage() {
 
     try {
       // Send the updated report data to the backend API
-      await axios.put(`http://localhost:8080/reports/${reportId}`, updatedReportData);
+      const response= await axios.put(`http://localhost:8080/reports/${reportId}/employee/4`, updatedReportData);
+      console.log(response)
     } catch (error) {
       console.error("Error updating weekly report:", error);
     }
   };
 
   return (
-    <form onSubmit={handleFormSubmit}>
+    <form  className="max-w-md w-full mx-auto p-8 bg-white shadow-md rounded-md md:max-w-2xl xl:max-w-3xl"
+    onSubmit={handleFormSubmit}>
       <div className="mb-4">
         <label
           htmlFor="employeeName"
@@ -99,7 +106,15 @@ function EditWeeklyReportPage() {
         >
           Employee Name
         </label>
-        <p>{employeeName}</p>
+        <input type="text"
+        value={employeeName}
+        id="employeeName"
+        name="employeeName"
+        onChange={(e)=>setEmployeeName(e.target.value)}
+        className="mt-1 p-2 border rounded-md w-full"
+        readOnly
+        disabled
+        />
       </div>
 
       <div className="mb-4">
@@ -116,10 +131,11 @@ function EditWeeklyReportPage() {
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
           className="mt-1 p-2 border rounded-md w-full"
+          readOnly
+          disabled
         />
       </div>
 
-      {/* Team Leader Display */}
       <div className="mb-4">
         <label
           htmlFor="teamLeaderName"
@@ -127,121 +143,171 @@ function EditWeeklyReportPage() {
         >
           Team Leader
         </label>
-        <p>{teamLeaderName}</p>
+        <input type="text" id="teamLeaderName" name="teamLeaderName" value={teamLeaderName}
+         className="mt-1 p-2 border rounded-md w-full"
+         readOnly
+         disabled
+         />
       </div>
 
-      <div className="mb-4">
-  <label
-    htmlFor="reportDetailsList"
-    className="block font-medium text-gray-700"
-  >
-    Report Details List
-  </label>
-  {reportDetails.map((detail, index) => (
-    <div key={index} className="mt-2 p-2 border rounded-md">
-      <p>Row {index + 1}</p>
-      <label
-        htmlFor={`deliverables_${index}`}
-        className="block font-medium text-gray-700"
-      >
-        Deliverables
-      </label>
-      <input
-        type="text"
-        id={`deliverables_${index}`}
-        name={`deliverables_${index}`}
-        value={detail.deliverables || ""}
-        onChange={(e) =>
-          handleReportDetailsChange(index, "deliverables", e.target.value)
-        }
-        className="mt-1 p-2 border rounded-md w-full"
-      />
 
-      <label
-        htmlFor={`plannedCompletionDate_${index}`}
-        className="block font-medium text-gray-700"
-      >
-        Planned Completion Date
-      </label>
-      <input
-        type="date"
-        id={`plannedCompletionDate_${index}`}
-        name={`plannedCompletionDate_${index}`}
-        value={detail.plannedCompletionDate || ""}
-        onChange={(e) =>
-          handleReportDetailsChange(
-            index,
-            "plannedCompletionDate",
-            e.target.value
-          )
-        }
-        className="mt-1 p-2 border rounded-md w-full"
-      />
+<div className="">
+<div className="mb-6">
+        <label
+          htmlFor="reportDetailsList"
+          className="block font-medium text-gray-700"
+        >
+          Report Details List
+        </label>
+        {reportDetails.map((detail, index) => (
+          <div key={crypto.randomUUID()}>
+<div className="mt-3 mb-1 flex gap-6  items-baseline">
 
-      <label
-        htmlFor={`actualCompletionDate_${index}`}
-        className="block font-medium text-gray-700"
-      >
-        Actual Completion Date
-      </label>
-      <input
-        type="date"
-        id={`actualCompletionDate_${index}`}
-        name={`actualCompletionDate_${index}`}
-        value={detail.actualCompletionDate || ""}
-        onChange={(e) =>
-          handleReportDetailsChange(
-            index,
-            "actualCompletionDate",
-            e.target.value
-          )
-        }
-        className="mt-1 p-2 border rounded-md w-full"
-      />
+            <p className="text-xl text-gray-700">Row {index +1}</p>
+            <button
+        onClick={() => removeReportDetail(index)}
+        className=" bg-red-500 text-white  px-2 rounded"
+        >
+        Remove 
+      </button>
+        </div>
+            <div className="mt-5 mb-4">
 
-      <label
-        htmlFor={`noOfHours_${index}`}
-        className="block font-medium text-gray-700"
-      >
-        Number of Hours
-      </label>
-      <input
-        type="number"
-        id={`noOfHours_${index}`}
-        name={`noOfHours_${index}`}
-        value={detail.noOfHours || ""}
-        onChange={(e) =>
-          handleReportDetailsChange(index, "noOfHours", e.target.value)
-        }
-        className="mt-1 p-2 border rounded-md w-full"
-      />
 
-      <label
-        htmlFor={`activity_${index}`}
-        className="block font-medium text-gray-700"
-      >
-        Activity
-      </label>
-      <input
-        type="text"
-        id={`activity_${index}`}
-        name={`activity_${index}`}
-        value={detail.activity || ""}
-        onChange={(e) =>
-          handleReportDetailsChange(index, "activity", e.target.value)
-        }
-        className="mt-1 p-2 border rounded-md w-full"
-      />
-    </div>
-  ))}
-  <button
-    onClick={addReportDetail}
-    className="mt-2 bg-blue-500 text-white py-1 px-2 rounded"
-  >
-    Add Report Detail
-  </button>
+<div className="p-2 border rounded-md">
+
+<label
+htmlFor={`deliverables_${index}`}
+className="block font-medium text-gray-700"
+>
+Deliverables
+</label>
+<input
+type="text"
+id={`deliverables_${index}`}
+name={`deliverables_${index}`}
+value={detail.deliverables || ""}
+onChange={(e) =>
+  handleReportDetailsChange(index, "deliverables", e.target.value)
+}
+className="mt-1 p-2 border rounded-md w-full"
+/>
 </div>
 
+
+</div>
+          <div key={index} className="mt-2 p-2 border rounded-md md:flex md:items-center md:gap-6  md:justify-evenly">
+          
+  <div className="my-4">
+
+
+            <label
+              htmlFor={`plannedCompletionDate_${index}`}
+              className="block font-medium text-gray-700"
+            >
+              Planned Completion Date
+            </label>
+            <input
+              type="date"
+              id={`plannedCompletionDate_${index}`}
+              name={`plannedCompletionDate_${index}`}
+              value={detail.plannedCompletionDate || ""}
+              onChange={(e) =>
+                handleReportDetailsChange(
+                  index,
+                  "plannedCompletionDate",
+                  e.target.value
+                )
+              }
+              className="mt-1 p-2 border rounded-md w-full"
+            />
+  </div>
+
+  <div className="my-4">
+
+            <label
+              htmlFor={`actualCompletionDate_${index}`}
+              className="block font-medium text-gray-700"
+            >
+              Actual Completion Date
+            </label>
+            <input
+              type="date"
+              id={`actualCompletionDate_${index}`}
+              name={`actualCompletionDate_${index}`}
+              value={detail.actualCompletionDate || ""}
+              onChange={(e) =>
+                handleReportDetailsChange(
+                  index,
+                  "actualCompletionDate",
+                  e.target.value
+                )
+              }
+              className="mt-1 p-2 border rounded-md w-full"
+            />
+ 
+
+  </div>
+  <div className=" ">
+<label
+  htmlFor={`noOfHours_${index}`}
+  className="block font-medium text-gray-700  w-28"
+>
+No of Hours 
+</label>
+<input
+  type="number"
+  id={`noOfHours_${index}`}
+  name={`noOfHours_${index}`}
+  value={detail.noOfHours || ""}
+  onChange={(e) =>
+    handleReportDetailsChange(index, "noOfHours", e.target.value)
+  }
+  className="mt-1 p-2 border rounded-md w-full md:w-[158px]"
+/>
+</div>
+
+             
+          </div>
+          <div className="mt-5 p-2 border rounded-md ">
+   
+
+<div className="mx-5 my-4 md:flex md:items-center justify-start">
+
+<label
+  htmlFor={`activity_${index}`}
+  className="block font-medium text-gray-700 w-28 md:w-20 "
+>
+  Activity
+</label>
+<input
+  type="text"
+  id={`activity_${index}`}
+  name={`activity_${index}`}
+  value={detail.activity || ""}
+  onChange={(e) =>
+    handleReportDetailsChange(index, "activity", e.target.value)
+  }
+  className="mt-1 p-2 border rounded-md w-full "
+/>
+</div >
+          </div>
+          </div>
+        ))}
+        
+        <div className="flex items-center justify-center">
+
+        <button
+          onClick={addReportDetail}
+          className="my-4 bg-blue-500 text-white py-1 px-2 rounded"
+          >
+         Tap to Add You'r Report Detail here
+        </button>
+          </div>
+       
+      </div>
+</div>
+      
 
       <div className="mb-4">
         <label htmlFor="remark" className="block font-medium text-gray-700">
@@ -297,7 +363,7 @@ function EditWeeklyReportPage() {
         type="submit"
         className="bg-blue-500 text-white py-2 px-4 rounded"
       >
-        Update Weekly Report
+        Create Weekly Report
       </button>
     </form>
   );

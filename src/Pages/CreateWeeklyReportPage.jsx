@@ -7,15 +7,34 @@ function CreateWeeklyReportPage() {
   const { employeeId, projectId } = useParams();
   const [employeeName, setEmployeeName] = useState("");
   const [projectName, setProjectName] = useState("");
-  const [reportDetails, setReportDetails] = useState([]);
   const [remark, setRemark] = useState("");
   const [
     expectedActivitiesOfUpcomingWeek,
     setExpectedActivitiesOfUpcomingWeek,
   ] = useState("");
+  
   const [reportStatus, setReportStatus] = useState("IN_PROGRESS");
   const [teamLeaderName, setTeamLeaderName] = useState("");
+  
+  // const [reportDetails, setReportDetails] = useState([]);
+  const [deliverables, setDeliverables] = useState("");
+  const [noOfHours, setNoOfHours] = useState("");
+  const [activity, setActivity] = useState("");
+  const [plannedCompletionDate, setPlannedCompletionDate] = useState();
+  const [actualCompletionDate, setActualCompletionDate] = useState();
 
+  const [reportDetails, setReportDetails] = useState([
+    {
+      deliverables: "",
+      noOfHours: "",
+      activity: "",
+      plannedCompletionDate: "",
+      actualCompletionDate: "",
+    },
+  ]);
+  
+ 
+ 
   useEffect(() => {
     async function fetchEmployeeAndProjectDetails() {
       try {
@@ -44,39 +63,55 @@ function CreateWeeklyReportPage() {
 
   const addReportDetail = () => {
     // Check if any of the input fields in the current report detail are empty
-    const isCurrentReportDetailEmpty =
-      reportDetails.some(
-        (detail) =>
-          !detail.plannedCompletionDate ||
-          !detail.actualCompletionDate ||
-          !detail.deliverables ||
-          !detail.noOfHours ||
-          !detail.activity
-      );
+    // const isCurrentReportDetailEmpty = reportDetails.some(
+    //   (detail) =>
+    //     !detail.plannedCompletionDate ||
+    //     !detail.actualCompletionDate ||
+    //     !detail.deliverables ||
+    //     !detail.noOfHours ||
+    //     !detail.activity
+    // );
+
+    // // If any field is empty, prevent adding new report detail
+    // if (isCurrentReportDetailEmpty) {
+    //   alert("Please fill in all fields for the current report detail.");
+    //   return;
+    // }
+
+    // Initialize a new report detail object with input values
+    const newReportDetail = {
+      deliverables: deliverables,
+      noOfHours: noOfHours,
+      activity: activity,
+      plannedCompletionDate: plannedCompletionDate,
+      actualCompletionDate: actualCompletionDate,
+    };
+
   
-    // If any field is empty, prevent adding new report detail
-    if (isCurrentReportDetailEmpty) {
-      alert("Please fill in all fields for the current report detail.");
-      return;
-    }
-  
-    // Add a new empty report detail to the array
-    setReportDetails([...reportDetails, {}]);
+    // Add the new report detail to the array
+    setReportDetails([...reportDetails, newReportDetail]);
+
+    // Clear the input values
+    setDeliverables("");
+    setNoOfHours("");
+    setActivity("");
+    setPlannedCompletionDate("");
+    setActualCompletionDate("");
+  };
+  const handleDetailChange = (index, property, value) => {
+    const updatedDetails = [...reportDetails];
+    updatedDetails[index][property] = value;
+    setReportDetails(updatedDetails);
   };
   
-  const handleReportDetailsChange = (index, field, value) => {
-    // Create a copy of the reportDetails array to update the specific field value
-    const updatedReportDetails = [...reportDetails];
-  
-    // Update the value of the specified field for the report detail at the given index
-    updatedReportDetails[index][field] = value;
-  
-    // Update the reportDetails state with the updated array
+
+  const removeReportDetail = (indexToRemove) => {
+    const updatedReportDetails = reportDetails.filter(
+      (_, index) => index !== indexToRemove
+    );
     setReportDetails(updatedReportDetails);
   };
-  
-  
-  
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     // Construct the data object for the API call
@@ -107,7 +142,10 @@ function CreateWeeklyReportPage() {
   };
 
   return (
-    <form onSubmit={handleFormSubmit}>
+    <form
+      className="max-w-md w-full mx-auto p-8 bg-white shadow-md rounded-md md:max-w-2xl xl:max-w-3xl"
+      onSubmit={handleFormSubmit}
+    >
       <div className="mb-4">
         <label
           htmlFor="employeeName"
@@ -115,7 +153,16 @@ function CreateWeeklyReportPage() {
         >
           Employee Name
         </label>
-        <p>{employeeName}</p>
+        <input
+          type="text"
+          value={employeeName}
+          id="employeeName"
+          name="employeeName"
+          onChange={(e) => setEmployeeName(e.target.value)}
+          className="mt-1 p-2 border rounded-md w-full"
+          readOnly
+          disabled
+        />
       </div>
 
       <div className="mb-4">
@@ -132,6 +179,8 @@ function CreateWeeklyReportPage() {
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
           className="mt-1 p-2 border rounded-md w-full"
+          readOnly
+          disabled
         />
       </div>
 
@@ -142,122 +191,140 @@ function CreateWeeklyReportPage() {
         >
           Team Leader
         </label>
-        <p>{teamLeaderName}</p>
+        <input
+          type="text"
+          id="teamLeaderName"
+          name="teamLeaderName"
+          value={teamLeaderName}
+          className="mt-1 p-2 border rounded-md w-full"
+          readOnly
+          disabled
+        />
       </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="reportDetailsList"
-          className="block font-medium text-gray-700"
-        >
-          Report Details List
-        </label>
-        {reportDetails.map((detail, index) => (
-          <div key={index} className="mt-2 p-2 border rounded-md">
-            <p>Row {++index}</p>
+      <div className="">
+        <div className="mb-6">
+          <label
+            htmlFor="reportDetailsList"
+            className="block font-medium text-gray-700"
+          >
+            Report Details List
+          </label>
+          {reportDetails.map((detail,index) => (
+            <div key={crypto.randomUUID()}>
+              <div className="mt-3 mb-1 flex gap-6  items-baseline">
+                <p className="text-xl text-gray-700">Row {index + 1}</p>
+                <button
+                  onClick={() => removeReportDetail(index)}
+                  className=" bg-red-500 text-white  px-2 rounded"
+                >
+                  Remove
+                </button>
+              </div>
+              <div className="mt-5 mb-4">
+                <div className="p-2 border rounded-md">
+                  <label
+                    htmlFor={`deliverables_${index}`}
+                    className="block font-medium text-gray-700"
+                  >
+                    Deliverables
+                  </label>
+                  <input
+                    type="text"
+                    id={`deliverables_${index}`}
+                    name={`deliverables_${index}`}
+                    value={detail.deliverables}
+                    onChange={(e) => handleDetailChange(index, "deliverables", e.target.value)}
+                    className="mt-1 p-2 border rounded-md w-full"
+                  />
+                </div>
+              </div>
+              <div
+                key={index}
+                className="mt-2 p-2 border rounded-md md:flex md:items-center md:gap-6  md:justify-evenly"
+              >
+                <div className="my-4">
+                  <label
+                    htmlFor={`plannedCompletionDate_${index}`}
+                    className="block font-medium text-gray-700"
+                  >
+                    Planned Completion Date
+                  </label>
+                  <input
+                    type="date"
+                    id={`plannedCompletionDate_${index}`}
+                    name={`plannedCompletionDate_${index}`}
+                    value={plannedCompletionDate}
+                    onChange={(e) => setPlannedCompletionDate(e.target.value)}
+                    className="mt-1 p-2 border rounded-md w-full"
+                  />
+                </div>
 
-<label
-              htmlFor={`deliverables_${index}`}
-              className="block font-medium text-gray-700"
+                <div className="my-4">
+                  <label
+                    htmlFor={`actualCompletionDate_${index}`}
+                    className="block font-medium text-gray-700"
+                  >
+                    Actual Completion Date
+                  </label>
+                  <input
+                    type="date"
+                    id={`actualCompletionDate_${index}`}
+                    name={`actualCompletionDate_${index}`}
+                    value={actualCompletionDate}
+                    onChange={(e) =>
+                     setActualCompletionDate(e.target.value)
+                    }
+                    className="mt-1 p-2 border rounded-md w-full"
+                  />
+                </div>
+                <div className=" ">
+                  <label
+                    htmlFor={`noOfHours_${index}`}
+                    className="block font-medium text-gray-700  w-28"
+                  >
+                    No of Hours
+                  </label>
+                  <input
+                    type="number"
+                    id={`noOfHours_${index}`}
+                    name={`noOfHours_${index}`}
+                    value={noOfHours}
+                    onChange={(e) => setNoOfHours(e.target.value)}
+                    className="mt-1 p-2 border rounded-md w-full md:w-[158px]"
+                  />
+                </div>
+              </div>
+              <div className="mt-5 p-2 border rounded-md ">
+                <div className="mx-5 my-4 md:flex md:items-center justify-start">
+                  <label
+                    htmlFor={`activity_${index}`}
+                    className="block font-medium text-gray-700 w-28 md:w-20 "
+                  >
+                    Activity
+                  </label>
+                  <input
+                    type="text"
+                    id={`activity_${index}`}
+                    name={`activity_${index}`}
+                    value={activity}
+                    onChange={(e) => setActivity(e.target.value)}
+                    className="mt-1 p-2 border rounded-md w-full "
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <div className="flex items-center justify-center">
+            <button
+              onClick={addReportDetail}
+              className="my-4 bg-blue-500 text-white py-1 px-2 rounded"
             >
-              Deliverables
-            </label>
-            <input
-              type="text"
-              id={`deliverables_${index}`}
-              name={`deliverables_${index}`}
-              value={detail.deliverables || ""}
-              onChange={(e) =>
-                handleReportDetailsChange(index, "deliverables", e.target.value)
-              }
-              className="mt-1 p-2 border rounded-md w-full"
-            />
-
-            <label
-              htmlFor={`plannedCompletionDate_${index}`}
-              className="block font-medium text-gray-700"
-            >
-              Planned Completion Date
-            </label>
-            <input
-              type="date"
-              id={`plannedCompletionDate_${index}`}
-              name={`plannedCompletionDate_${index}`}
-              value={detail.plannedCompletionDate || ""}
-              onChange={(e) =>
-                handleReportDetailsChange(
-                  index,
-                  "plannedCompletionDate",
-                  e.target.value
-                )
-              }
-              className="mt-1 p-2 border rounded-md w-full"
-            />
-
-            <label
-              htmlFor={`actualCompletionDate_${index}`}
-              className="block font-medium text-gray-700"
-            >
-              Actual Completion Date
-            </label>
-            <input
-              type="date"
-              id={`actualCompletionDate_${index}`}
-              name={`actualCompletionDate_${index}`}
-              value={detail.actualCompletionDate || ""}
-              onChange={(e) =>
-                handleReportDetailsChange(
-                  index,
-                  "actualCompletionDate",
-                  e.target.value
-                )
-              }
-              className="mt-1 p-2 border rounded-md w-full"
-            />
-
-            
-
-            <label
-              htmlFor={`noOfHours_${index}`}
-              className="block font-medium text-gray-700"
-            >
-              Number of Hours
-            </label>
-            <input
-              type="number"
-              id={`noOfHours_${index}`}
-              name={`noOfHours_${index}`}
-              value={detail.noOfHours || ""}
-              onChange={(e) =>
-                handleReportDetailsChange(index, "noOfHours", e.target.value)
-              }
-              className="mt-1 p-2 border rounded-md w-full"
-            />
-
-            <label
-              htmlFor={`activity_${index}`}
-              className="block font-medium text-gray-700"
-            >
-              Activity
-            </label>
-            <input
-              type="text"
-              id={`activity_${index}`}
-              name={`activity_${index}`}
-              value={detail.activity || ""}
-              onChange={(e) =>
-                handleReportDetailsChange(index, "activity", e.target.value)
-              }
-              className="mt-1 p-2 border rounded-md w-full"
-            />
+              Tap to Add You'r Report Detail here
+            </button>
           </div>
-        ))}
-        <button
-          onClick={addReportDetail}
-          className="mt-2 bg-blue-500 text-white py-1 px-2 rounded"
-        >
-          Add Report Detail
-        </button>
+        </div>
       </div>
 
       <div className="mb-4">
