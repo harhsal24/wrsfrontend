@@ -15,6 +15,8 @@ import CreateProjectForm from './Pages/CreateProjectForm';
 import CreateWeeklyReportPage from './Pages/CreateWeeklyReportPage'
 import EditProjectPage from './Pages/EditProjectPage';
 import EditWeeklyReportPage from './Pages/EditWeeklyReportPage';
+import ForgotPassword from './Pages/ForgotPassword';
+import ReportDetailPage from './Pages/ReportDetailPage';
 
 
 
@@ -34,10 +36,13 @@ function App() {
         <Route path="/employee-project-table" element={<EmployeeProjectTable/>}/>
         <Route path='/login' element={<Login/>}/>
         <Route path='/createProject' element={<CreateProjectForm/>}/>
+        <Route path='editProject/:projectId' element={<EditProjectPage/>}/>
         <Route path="/createWeeklyReport/:employeeId/:projectId" element={<CreateWeeklyReportPage  />}/> 
         <Route path="/editWeeklyReport/:reportId" element={<EditWeeklyReportPage />}/> 
 
         <Route path='/dashboard/:empID' element={<DashboardPage/>}/>
+        <Route path='/forgot-password' element={<ForgotPassword/>}/>
+        <Route path='/reportDetail/:reportId' element={<ReportDetailPage/>}/>
 
 
       </Routes>

@@ -93,8 +93,8 @@ const Registration = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-md w-full mx-auto p-8 bg-white shadow-md rounded-md md:max-w-2xl xl:max-w-3xl">
+    <div className="min-h-screen flex items-center justify-center bg-gray-300">
+      <div className="max-w-md w-full mx-auto p-8 bg-white shadow-xl rounded-xl md:max-w-2xl xl:max-w-3xl">
         <h2 className="text-2xl font-semibold mb-4">Registration</h2>
         {submitted && errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
         <div className="md:flex md:items-center md:justify-start md:gap-5">
@@ -106,12 +106,13 @@ const Registration = () => {
           <input
             type="text"
             id="firstName"
-            className={`w-full p-2 border rounded-md focus:ring focus:ring-blue-300 ${
+            className={`w-full p-2  border-2 border-slate-300 shadow placeholder:text-gray-600 rounded-md focus:ring focus:ring-blue-300 ${
                 submitted && !firstName ? "border-red-500" : ""
             }`}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             required
+            placeholder="First name"
           />
           {submitted && !firstName && (
             <p className="text-red-500">Please enter your first name</p>
@@ -123,9 +124,10 @@ const Registration = () => {
             Last Name
           </label>
           <input
+          placeholder="Last name"
             type="text"
             id="lastName"
-            className={`w-full p-2 border rounded-md focus:ring focus:ring-blue-300 ${
+            className={`w-full p-2  border-2 border-slate-300 shadow placeholder:text-gray-600 rounded-md focus:ring focus:ring-blue-300 ${
                 submitted && !lastName ? "border-red-500" : ""
             }`}
             value={lastName}
@@ -145,9 +147,10 @@ const Registration = () => {
             Email
           </label>
           <input
+          placeholder="Email"
             type="email"
             id="Email"
-            className={`w-full p-2 border rounded-md focus:ring focus:ring-blue-300 ${
+            className={`w-full p-2  border-2 border-slate-300 shadow placeholder:text-gray-600 rounded-md focus:ring focus:ring-blue-300 ${
                 submitted && !login ? "border-red-500" : ""
             }`}
             value={login}
@@ -161,14 +164,16 @@ const Registration = () => {
             Password
           </label>
           <input
+          placeholder="password at least 4 char"
             type="password"
             id="password"
-            className={`w-full p-2 border rounded-md focus:ring focus:ring-blue-300 ${
+            className={`w-full p-2  border-2 border-slate-300 shadow placeholder:text-gray-600 rounded-md focus:ring focus:ring-blue-300 ${
                 submitted &&  !password ? "border-red-500" : ""
             }`}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            minLength={4}
           />
           {submitted && !password && <p className="text-red-500">Please enter a password</p>}
         </div>
@@ -186,7 +191,7 @@ const Registration = () => {
                 value="SUPER_ADMIN"
                 checked={role === 'SUPER_ADMIN'}
                 onChange={() => setRole('SUPER_ADMIN')}
-                className={`mr-1 ${
+                className={`mr-1  ${
                   submitted && !role ? 'border-red-500' : 'border-blue-300'
                 }`}
               />
@@ -288,6 +293,7 @@ const Registration = () => {
      options={[...allEmployeesList, { value: null, label: "None" }]}
     value={managerId}
     onChange={setManagerId}
+    className=" border-2 border-slate-300 shadow placeholder:text-gray-600 rounded-md"
   />
           { submitted && !managerId && (
             <p className="text-red-500">Please select a manager</p>
