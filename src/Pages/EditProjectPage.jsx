@@ -3,6 +3,8 @@ import axios from 'axios';
 import Select from 'react-select';
 import { useParams } from 'react-router-dom';
 import moment from 'moment';
+import { useMutation, useQuery } from 'react-query';
+import { useReportStore } from '../store/useReportStore';
 
 
 
@@ -13,8 +15,6 @@ function EditProjectPage() {
   const [endDate, setEndDate] = useState('');
   const [teamLeader, setTeamLeader] = useState(null);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-  const [listRegularEmployees, setListRegularEmployees] = useState([]);
-  const [listTeamLeaders, setListTeamLeaders] = useState([]);
   const [employeeName, setEmployeeName] = useState("");
   const [reportDetails, setReportDetails] = useState([]);
   const [remark, setRemark] = useState("");
@@ -24,6 +24,28 @@ function EditProjectPage() {
   ] = useState("");
 
 
+  const setSelectedProjectId = useReportStore(state => state.setSelectedProjectId);
+
+  const { data: listRegularEmployees } = useQuery('regularEmployees', async () => {
+    const response = await axios.get('http://localhost:8080/employees/byRole/REGULAR_EMPLOYEE');
+    return response.data.map(employee => ({
+      value: employee.employeeId,
+      label: employee.employeeName
+    }));
+  });
+
+  const { data: listTeamLeaders } = useQuery('teamLeaders', async () => {
+    const response = await axios.get('http://localhost:8080/employees/byRole/TEAM_LEADER');
+    return response.data.map(employee => ({
+      value: employee.employeeId,
+      label: employee.employeeName
+    }));
+  });
+
+  const { data: projectDetails } = useQuery(['project', projectId], async () => {
+    const response = await axios.get(`http://localhost:8080/projects/${projectId}`);
+    return response.data;
+  });
 
   const [formErrors, setFormErrors] = useState({
     projectName: false,
@@ -33,95 +55,40 @@ function EditProjectPage() {
     selectedEmployees: false
   });
 
-  useEffect(() => {
-    async function fetchProjectDetails() {
-        try {
-            // Fetch project details by project ID
-            const response = await axios.get(`http://localhost:8080/projects/${projectId}`);
-            console.log(response);
-            const project = response.data;
-            setProjectName(project.projectName);
-            setStartDate(moment(project.startDate).format('YYYY-MM-DD')); // Format the start date
-            setEndDate(moment(project.expectedEndDate).format('YYYY-MM-DD')); // Format the end date
-            setTeamLeader({ value: project.teamLeader.employeeId, label: project.teamLeader.employeeName });
-            const selectedEmployeeOptions = project.employees.map(employee => ({
-                value: employee.employeeId,
-                label: employee.employeeName
-            }));
-            setSelectedEmployees(selectedEmployeeOptions);
-        } catch (error) {
-            console.error('Error fetching project details:', error);
-        }
-      }
-      async function fetchRegularEmployees() {
-        try {
-          const response = await axios.get('http://localhost:8080/employees/byRole/REGULAR_EMPLOYEE');
-          const options = response.data.map(employee => ({
-            value: employee.employeeId,
-            label: employee.employeeName
-          }));
-          setListRegularEmployees(options);
-        } catch (error) {
-          console.error('Error fetching regular employees:', error);
-        }
-      }
-      async function fetchTeamLeaders() {
-        try {
-          const response = await axios.get('http://localhost:8080/employees/byRole/TEAM_LEADER');
-          const options = response.data.map(employee => ({
-            value: employee.employeeId,
-            label: employee.employeeName
-          }));
-          setListTeamLeaders(options);
-        } catch (error) {
-          console.error('Error fetching team leaders:', error);
-        }
-      }
-  
-      fetchProjectDetails();
-      fetchRegularEmployees();
-      fetchTeamLeaders();
-
-  }, [projectId]);
+  const editProjectMutation = useMutation(async (projectData) => {
+    await axios.put(`http://localhost:8080/projects/${projectId}`, projectData);
+  });
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-      // Basic validation
-      if (!projectName || !startDate || !endDate || !teamLeader || selectedEmployees.length === 0) {
-        setFormErrors({
-          projectName: !projectName,
-          startDate: !startDate,
-          endDate: !endDate,
-          teamLeader: !teamLeader,
-          selectedEmployees: selectedEmployees.length === 0
-        });
-        return;
-      }
-
-    // Create a project object to submit
-    const projectData = {
-        teamLeader: { employeeId: teamLeader.value, employeeName: teamLeader.label },
-        employees: selectedEmployees.map(employee => ({
-          employeeId: employee.value,
-          employeeName: employee.label
-        })),
-        projectId, 
-        projectName,
-        startDate,
-        expectedEndDate: endDate
-      };
-      
-    try {
-      // Update project details
-      await axios.put(`http://localhost:8080/projects/${projectId}`, projectData);
-      console.log("Successfully Updated Project");
-    } catch (error) {
-      console.error('Error updating project:', error);
+    // Basic validation
+    if (!projectDetails.projectName || !projectDetails.startDate || !projectDetails.expectedEndDate || !projectDetails.teamLeader || projectDetails.employees.length === 0) {
+      setFormErrors({
+        projectName: !projectDetails.projectName,
+        startDate: !projectDetails.startDate,
+        endDate: !projectDetails.expectedEndDate,
+        teamLeader: !projectDetails.teamLeader,
+        selectedEmployees: projectDetails.employees.length === 0
+      });
+      return;
     }
+
+    // Update project details
+    editProjectMutation.mutateAsync({
+      teamLeader: { employeeId: projectDetails.teamLeader.employeeId, employeeName: projectDetails.teamLeader.employeeName },
+      employees: projectDetails.employees.map(employee => ({
+        employeeId: employee.employeeId,
+        employeeName: employee.employeeName
+      })),
+      projectId,
+      projectName: projectDetails.projectName,
+      startDate: projectDetails.startDate,
+      expectedEndDate: projectDetails.expectedEndDate
+    });
+
+    setSelectedProjectId(projectId); 
   };
-
-
 
 return (
   <div className='flex items-center justify-center min-h-screen bg-gray-100'>

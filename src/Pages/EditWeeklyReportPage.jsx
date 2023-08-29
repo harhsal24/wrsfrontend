@@ -5,11 +5,13 @@ import BottomSlider from "./BottomSlider";
 import { RiEdit2Line, RiDeleteBin6Line } from 'react-icons/ri';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import moment from "moment";
+import { useReportStore } from "../store/useReportStore";
+import { useMutation, useQuery } from "react-query";
+import useUserEmployeeStore from "../store/userEmployeeStore";
 function EditWeeklyReportPage() {
   const { reportId } = useParams();
   const [employeeName, setEmployeeName] = useState("");
   const [projectName, setProjectName] = useState("");
-  const [reportDetails, setReportDetails] = useState([]);
   const [teamLeaderName, setTeamLeaderName] = useState("");
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(-1);
@@ -74,26 +76,10 @@ function EditWeeklyReportPage() {
       setIsSliderOpen(false)
     }
 
-  useEffect(() => {
-    async function fetchReportDetails() {
-      try {
-        // Fetch report details by reportId
-        const reportResponse = await axios.get(`http://localhost:8080/reports/${reportId}`);
-        const reportData = reportResponse.data;
-
-        setEmployeeName(reportData.employee.employeeName);
-        setProjectName(reportData.project.projectName);
-        setReportDetails(reportData.reportDetailsList);
-
-        // Assuming that reportData.project.teamLeader exists
-        setTeamLeaderName(reportData.project.teamLeader.employeeName);
-      } catch (error) {
-        console.error("Error fetching report details:", error);
-      }
-    }
-
-    fetchReportDetails();
-  }, [reportId]);
+    const { data: reportData, isLoading, isError } = useQuery(['report', reportId], async () => {
+      const response = await axios.get(`http://localhost:8080/reports/${reportId}`);
+      return response.data;
+    });
 
   const handleReportDetailsChange = (index, field, value) => {
     const updatedReportDetails = [...reportDetails];
@@ -130,6 +116,12 @@ function EditWeeklyReportPage() {
     setReportDetails(updatedReportDetails);
   };
 
+  const loggedInEmployee = useUserEmployeeStore(state => state.loggedInEmployee);
+
+  const editReportMutation = useMutation(async (updatedReportData) => {
+    await axios.put(`http://localhost:8080/reports/${reportId}/employee/${loggedInEmployee.employeeId}`, updatedReportData);
+  });
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -146,14 +138,12 @@ function EditWeeklyReportPage() {
       reportStatus: "",
     };
 
-    try {
-      // Send the updated report data to the backend API
-      const response= await axios.put(`http://localhost:8080/reports/${reportId}/employee/4`, updatedReportData);
-      console.log(response)
-    } catch (error) {
-      console.error("Error updating weekly report:", error);
-    }
+     // Call the mutation function
+     editReportMutation.mutate(updatedReportData);
   };
+
+  const reportDetails = useReportStore((state) => state.reportDetails);
+const setReportDetails = useReportStore((state) => state.setReportDetails);
 
   return (
     <form

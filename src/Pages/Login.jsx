@@ -1,24 +1,42 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { useQueryClient } from 'react-query';
+import { useAuthStore, useLoginStore } from '../store/loginStore';
+import useUserEmployeeStore from '../store/userEmployeeStore';
 
 const Login = () => {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
-  const [token, setToken] = useState('')
-  const [errorMessage, setErrorMessage] = useState('');
+  const errorMessage = useLoginStore((state) => state.errorMessage);
+  const setErrorMessage = useLoginStore((state) => state.setErrorMessage);
 
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const setLoggedInEmployee = useUserEmployeeStore((state) => state.setLoggedInEmployee);
   const handleLogin = async () => {
     try {
-        console.log( { login, password })
       const response = await axios.post('http://localhost:8080/login', { login, password });
-          setToken(response.data.token)  
-          if (response.status==200) {
-            navigate(`/dashboard/${response.data.empId}`);
-          }   
-      console.log('Logged in successfully:', response.data);
+      const { token, empId, name, role, accessToken, refreshToken } = response.data;
+  
+      if (response.status==200) {
+        const employeeData = {
+          empId: empId,
+          name: name,
+          login: login,
+          token: token,
+          role: role,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          
+        };
+        setLoggedInEmployee(employeeData);
+        queryClient.setQueryData('authToken', token);
+        navigate(`/dashboard/${empId}`);
+      }
     } catch (error) {
+      console.error('Login failed:', error);
       setErrorMessage('Invalid login or password');
     }
   };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
+import { useMutation, useQuery } from 'react-query';
 
 function CreateProjectForm({ onSubmit }) {
   const [projectName, setProjectName] = useState('');
@@ -8,8 +9,6 @@ function CreateProjectForm({ onSubmit }) {
   const [endDate, setEndDate] = useState('');
   const [teamLeader, setTeamLeader] = useState(null);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-  const [listRegularEmployees, setListRegularEmployees] = useState([]);
-  const [listTeamLeaders, setListTeamLeaders] = useState([]);
   const [formErrors, setFormErrors] = useState({
     projectName: false,
     startDate: false,
@@ -18,36 +17,25 @@ function CreateProjectForm({ onSubmit }) {
     selectedEmployees: false
   });
 
-  useEffect(() => {
-    async function fetchRegularEmployees() {
-      try {
-        const response = await axios.get('http://localhost:8080/employees/byRole/REGULAR_EMPLOYEE');
-        const options = response.data.map(employee => ({
-          value: employee.employeeId,
-          label: employee.employeeName
-        }));
-        setListRegularEmployees(options);
-      } catch (error) {
-        console.error('Error fetching regular employees:', error);
-      }
-    }
+  // Fetch employees using React Query
+  const { data: listRegularEmployees } = useQuery('regularEmployees', async () => {
+    const response = await axios.get('http://localhost:8080/employees/byRole/REGULAR_EMPLOYEE');
+    return response.data.map(employee => ({
+      value: employee.employeeId,
+      label: employee.employeeName
+    }));
+  });
 
-    async function fetchTeamLeaders() {
-      try {
-        const response = await axios.get('http://localhost:8080/employees/byRole/TEAM_LEADER');
-        const options = response.data.map(employee => ({
-          value: employee.employeeId,
-          label: employee.employeeName
-        }));
-        setListTeamLeaders(options);
-      } catch (error) {
-        console.error('Error fetching team leaders:', error);
-      }
-    }
+  const { data: listTeamLeaders } = useQuery('teamLeaders', async () => {
+    const response = await axios.get('http://localhost:8080/employees/byRole/TEAM_LEADER');
+    return response.data.map(employee => ({
+      value: employee.employeeId,
+      label: employee.employeeName
+    }));
+  });
 
-    fetchRegularEmployees();
-    fetchTeamLeaders();
-  }, []);
+  // Create project mutation using React Query
+  const createProjectMutation = useMutation(newProjectData => axios.post('http://localhost:8080/projects', newProjectData));
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();

@@ -10,7 +10,7 @@ import ReportInterface from './components/Pages/ReportInterface';
 import EmployeeDetailPrevious from './components/Employee/EmployeeDetailPrevious';
 import EmployeeForm from './components/Employee/EmployeeForm';
 import EmployeeProjectTable from './components/Employee/EmployeeProjectTable';
-import DashboardPage from './Pages/DashboardPage';
+import DashboardPage from './Pages/DashboardPage_SuperAdmin';
 import CreateProjectForm from './Pages/CreateProjectForm';
 import CreateWeeklyReportPage from './Pages/CreateWeeklyReportPage'
 import EditProjectPage from './Pages/EditProjectPage';

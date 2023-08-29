@@ -2,6 +2,24 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
+import { useRegistrationStore } from "../store/registrationStore";
+import { useMutation, useQueryClient,useQuery } from "react-query";
+
+const fetchAllEmployees = async () => {
+  const response = await axios.get('http://localhost:8080/employees/allEmployees');
+  return response.data;
+};
+
+const registerUser = async (userData) => {
+  const response = await axios.post('http://localhost:8080/register', userData, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data.token;
+};
+
+
 const Registration = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -11,30 +29,31 @@ const Registration = () => {
   const [gender, setGender] = useState("");
   const [managerId, setManagerId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [allEmployeesList, setAllEmployeesList] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [token, setToken] = useState("");
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function fetchAllEmployees() {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/employees/allEmployees"
-        );
-        console.log(response);
-        const options = response.data.map((employee) => ({
-          value: employee.employeeId,
-          label: employee.employeeName,
-        }));
-        setAllEmployeesList(options);
-      } catch (error) {
-        console.error("Error fetching regular employees:", error);
+  const setSubmittedStatus = useRegistrationStore((state) => state.setSubmitted);
+  const queryClient = useQueryClient();
+
+  const { data: allEmployeesList = [] } = useQuery('allEmployees', fetchAllEmployees);
+
+  const registerMutation = useMutation(registerUser, {
+    onSuccess: (data) => {
+      setSubmittedStatus(true);
+      queryClient.setQueryData('authToken', data);
+      navigate('/dashboard');
+    },
+    onError: (error) => {
+      if (error.response && error.response.status === 400) {
+        setErrorMessage('Registration failed: User with the same email already exists');
+      } else {
+        setErrorMessage('Registration failed');
       }
-    }
-    fetchAllEmployees();
-  }, []);
+    },
+  });
+
 
   const handleRegistration = async () => {
     const missingFields = [];

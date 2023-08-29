@@ -19,7 +19,8 @@ const [project, setProject] = useState({})
 const [reportDetailsList, setReportDetailsList] = useState([])
 const [reportStatus, setReportStatus] = useState("")
 const [teamLeader, setTeamLeader] = useState({})
-
+const [employeeName, setEmployeeName] = useState("")
+const [projectName, setProjectName] = useState("")
   useEffect(() => {
   // Fetch the report detail using Axios
   const fetchReportDetail = async () => {
@@ -27,7 +28,9 @@ const [teamLeader, setTeamLeader] = useState({})
       const response = await axios.get(`http://localhost:8080/reports/${reportId}`);
       setReportDetails(response.data);
       setEmployee(response.data.employee)
+      setEmployeeName(response.data.employee.employeeName)
       setProject(response.data.project)
+      setProjectName(response.data.project.projectName)
       setReportDetailsList(response.data.reportDetailsList)
       setReportStatus(response.data.reportStatus)
       setTeamLeader(response.data.project.teamLeader.employeeName)
@@ -102,7 +105,7 @@ const [teamLeader, setTeamLeader] = useState({})
         </label>
         <input
           type="text"
-          value={employee.employeeName}
+          value={employeeName}
           id="employeeName"
           name="employeeName"
           onChange={(e) => setEmployeeName(e.target.value)}

@@ -5,27 +5,26 @@ import Avatar from 'react-avatar';
 import randomColor from 'randomcolor';
 import ProjectCard from './ProjectCard';
 import ReportCard from './ReportCard';
+import { useQuery } from 'react-query';
+import useEmployeeDetailStore from '../store/useEmployeeDetailStore';
+
+const fetchEmployeeDetails = async (employeeId) => {
+  const response = await axios.get(`http://localhost:8080/employees/${employeeId}`);
+  return response.data;
+};
 
 const EmployeeDetailPage = () => {
-  const { employeeId } = useParams();
-  const [employee, setEmployee] = useState(null);
-  const [projects, setProjects] = useState([]);
-const [reports, setReports] = useState();
-  useEffect(() => {
-    async function fetchEmployeeDetails() {
-      try {
-        const response = await axios.get(`http://localhost:8080/employees/${employeeId}`);
-        setEmployee(response.data);
-        setProjects(response.data.projects)
-        setReports(response.data.weeklyReports)
-        console.log(response.data)
-      } catch (error) {
-        console.error('Error fetching employee details:', error);
-      }
-    }
+  
+  const{employeeId}=useParams();
 
-    fetchEmployeeDetails();
-  }, [employeeId]);
+  const projects = useEmployeeDetailStore(state => state.projects);
+  const setProjects = useEmployeeDetailStore(state => state.setProjects);
+  const reports = useEmployeeDetailStore(state => state.reports);
+  const setReports = useEmployeeDetailStore(state => state.setReports);
+
+const { data: employee, isLoading, isError } = useQuery(['employee', employeeId], () => fetchEmployeeDetails(employeeId));
+
+
 
   return (
     <div className=" mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">

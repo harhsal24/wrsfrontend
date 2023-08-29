@@ -3,7 +3,10 @@ import Avatar from 'react-avatar';
 import randomColor from 'randomcolor';
 import { FaCheck, FaHourglassStart } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { FaEdit } from 'react-icons/fa';
+import useUserEmployeeStore from '../store/userEmployeeStore';
 const ReportCard = ({ report, button,projectName }) => {
+  const loggedInEmployee = useUserEmployeeStore((state) => state.loggedInEmployee);
   const formatDate = (dateString) => {
     const options = {
       year: 'numeric',
@@ -71,7 +74,10 @@ const ReportCard = ({ report, button,projectName }) => {
       </Link>
       
       <div>
-      <div className={`ml-auto ${button ? ' ': 'hidden'}`} >{renderActionButton(report.reportStatus)}</div>
+      <div className={`ml-auto ${button ? ' ': 'hidden'}`} ><Link to={`/remark/${report.reportId}`}>
+        {renderActionButton(report.reportStatus)}</Link>
+        </div>
+     
       </div>
           </div>
       { projectName && <p className='ml-auto'>For : {report.project.projectName } </p>}
@@ -85,6 +91,15 @@ const ReportCard = ({ report, button,projectName }) => {
       >
         Report Status: {getStatusText(report.reportStatus)}
       </p>
+      <div className='flex justify-end'> 
+      {report.reportStatus === 'IN_PROCESS' &&
+            loggedInEmployee.role === 'REGULAR_EMPLOYEE' && (
+              <Link to={`/editWeeklyReport/${report.reportId}`} >
+              <FaEdit
+                className="cursor-pointer text-blue-500 hover:text-blue-600"/>
+                </Link>
+          )}
+    </div>
     </div>
   );
 };

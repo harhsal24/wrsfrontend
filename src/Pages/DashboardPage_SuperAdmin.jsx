@@ -3,26 +3,18 @@ import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
 import ReportCard from './ReportCard';
 import ProjectCard from './ProjectCard';
+import { useReportStore } from '../store/useReportStore';
+import { useQuery } from 'react-query';
 
-function DashboardPage() {
+function DashboardPage_SuperAdmin() {
   const { empID } = useParams();
-  const [listProjects, setListProjects] = useState([]);
-  const [selectedProjectId, setSelectedProjectId] = useState(false);
+  const setSelectedProjectId = useReportStore(state => state.setSelectedProjectId);
+  const selectedProjectId = useReportStore(state => state.selectedProjectId);
 
-
-  useEffect(() => {
-    const fetchProjectList = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8080/projects/employee/${empID}`);
-        setListProjects(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.log("Error response on project", error);
-      }
-    };
-
-    fetchProjectList();
-  }, [empID]);
+  const { data: listProjects, error, isLoading } = useQuery(['projects', empID], async () => {
+    const response = await axios.get(`http://localhost:8080/projects/employee/${empID}`);
+    return response.data;
+  });
 
 
 
@@ -44,11 +36,13 @@ function DashboardPage() {
               ))}
               {/* Add Project Button */}
               <div className='flex items-center justify-center'>
+                
             <Link to="/createProject">
               <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                 Add Project
               </button>
             </Link>
+
               </div>
           </div>
         </div>
@@ -81,11 +75,6 @@ function DashboardPage() {
               ))}
               <div className='flex items-center w-full justify-center'>
 
-                <Link to="/createReport">
-    <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
-      Create Report
-    </button>
-  </Link>
               </div>
           </div>
         </div>
@@ -96,4 +85,4 @@ function DashboardPage() {
   );
 }
 
-export default DashboardPage;
+export default DashboardPage_SuperAdmin;

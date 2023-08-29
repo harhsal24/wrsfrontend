@@ -5,6 +5,8 @@ import moment from "moment";
 import { RiEdit2Line, RiDeleteBin6Line } from 'react-icons/ri';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import BottomSlider from "./BottomSlider";
+import { useReportStore } from "../store/useReportStore";
+import { useQuery } from "react-query";
 
 function CreateWeeklyReportPage() {
   const { employeeId, projectId } = useParams();
@@ -20,11 +22,6 @@ function CreateWeeklyReportPage() {
   const [teamLeaderName, setTeamLeaderName] = useState("");
   
   const [reportDetails, setReportDetails] = useState([]);
-  const [deliverables, setDeliverables] = useState("");
-  const [noOfHours, setNoOfHours] = useState("");
-  const [activity, setActivity] = useState("");
-  const [plannedCompletionDate, setPlannedCompletionDate] = useState();
-  const [actualCompletionDate, setActualCompletionDate] = useState();
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(-1);
   
@@ -83,32 +80,19 @@ function CreateWeeklyReportPage() {
     setActualCompletionDate("");
     setIsSliderOpen(false)
   }
+  
+  const { deliverables, noOfHours, activity, plannedCompletionDate, actualCompletionDate, setDeliverables, setNoOfHours, setActivity, setPlannedCompletionDate, setActualCompletionDate } = useReportStore();
+// Fetch employee details
+const employeeQuery = useQuery(['employee', employeeId], async () => {
+  const response = await axios.get(`http://localhost:8080/employees/${employeeId}`);
+  return response.data;
+});
 
-  useEffect(() => {
-    async function fetchEmployeeAndProjectDetails() {
-      try {
-        // Fetch employee details by employeeId
-        const employeeResponse = await axios.get(
-          `http://localhost:8080/employees/${employeeId}`
-        );
-        setEmployeeName(employeeResponse.data.name);
-
-        // Fetch project details by projectId
-        const projectResponse = await axios.get(
-          `http://localhost:8080/projects/${projectId}`
-        );
-        setProjectName(projectResponse.data.projectName);
-
-        console.log(projectResponse.data);
-
-        setTeamLeaderName(projectResponse.data.teamLeader.employeeName);
-      } catch (error) {
-        console.error("Error fetching employee or project details:", error);
-      }
-    }
-
-    fetchEmployeeAndProjectDetails();
-  }, [employeeId, projectId]);
+// Fetch project details
+const projectQuery = useQuery(['project', projectId], async () => {
+  const response = await axios.get(`http://localhost:8080/projects/${projectId}`);
+  return response.data;
+});
 
   const addReportDetail = () => {
     // Check if any of the fields in newReportDetail are null or empty
