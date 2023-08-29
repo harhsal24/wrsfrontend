@@ -17,6 +17,9 @@ import EditProjectPage from './Pages/EditProjectPage';
 import EditWeeklyReportPage from './Pages/EditWeeklyReportPage';
 import ForgotPassword from './Pages/ForgotPassword';
 import ReportDetailPage from './Pages/ReportDetailPage';
+import RemarkPage from './Pages/RemarkPage';
+import ProjectDetailPage from './Pages/ProjectDetailPage ';
+import EmployeeDetailPage from './Pages/EmployeeDetailPage';
 
 
 
@@ -43,8 +46,9 @@ function App() {
         <Route path='/dashboard/:empID' element={<DashboardPage/>}/>
         <Route path='/forgot-password' element={<ForgotPassword/>}/>
         <Route path='/reportDetail/:reportId' element={<ReportDetailPage/>}/>
-
-
+        <Route path='/remark/:reportId' element={<RemarkPage/>}/>
+        <Route path="/projectDetail/:projectId" element={<ProjectDetailPage/>} />
+        <Route path="/employeeDetail/:employeeId" element={<EmployeeDetailPage/>} />
       </Routes>
  
   );

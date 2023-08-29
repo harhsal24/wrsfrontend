@@ -73,7 +73,7 @@ function DashboardPage() {
                         }
                       })
                       .map((report) => (
-                        <ReportCard key={report.reportId} report={report} />
+                        <ReportCard key={report.reportId} report={report} button={true} />
                       ))}
                       {/* Create Report Button */}
 

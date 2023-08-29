@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Avatar from 'react-avatar';
 import randomColor from 'randomcolor';
@@ -25,8 +25,7 @@ const ReportDetailPage = () => {
   }, [reportId]);
 
   const getStatusText = (status) => {
-    // Implement the logic to map status codes to text here
-    // For example:
+ 
     if (status === 'IN_PROGRESS') {
       return 'In Progress';
     } else if (status === 'APPROVED') {
@@ -44,6 +43,7 @@ const ReportDetailPage = () => {
   {reportData && (
     <>
       <p className="text-lg">
+        <Link to={`/employeeDetail/${reportData.employee.employeeId}`} >
         Created By:{' '}
         <Avatar
           name={reportData.employee.employeeName}
@@ -53,6 +53,7 @@ const ReportDetailPage = () => {
           className="ml-1 mr-2"
         />{' '}
         {reportData.employee.employeeName}
+        </Link>
       </p>
       <p className="text-base">Created At: {moment(reportData.reportCreatedDateTime).format('DD-MM-YY')}</p>
       <p className="text-base">Report Status: {getStatusText(reportData.reportStatus)}</p>
@@ -60,6 +61,7 @@ const ReportDetailPage = () => {
         For Project: {reportData.project.projectName}
       </p>
       <p className="text-base">
+      <Link to={`/employeeDetail/${reportData.employee.employeeId}`} >
         TeamLeader:{' '}
         <Avatar
           name={reportData.project.teamLeader.employeeName}
@@ -71,6 +73,7 @@ const ReportDetailPage = () => {
           className="ml-1 mr-2"
         />{' '}
         {reportData.project.teamLeader.employeeName}
+        </Link>
       </p>
     </>
   )}
@@ -111,6 +114,23 @@ const ReportDetailPage = () => {
           </div>
         )}
       </div>
+      {reportData && (
+  <div className="bg-gray-100 p-4 rounded-md shadow-md">
+    <div className="mb-2">
+      <p className="text-lg font-semibold">Remarks: {reportData.remark}</p>
+    </div>
+    <div className="mb-2">
+      <p>Points for Discussion: {reportData.pointsForDiscussion}</p>
+    </div>
+    <div className="mb-2">
+      <p>Expected Activities of Upcoming Week: {reportData.expectedActivitiesOfUpcomingWeek}</p>
+    </div>
+    <div className="mb-2">
+      <p>Report Status: {reportData.reportStatus}</p>
+    </div>  
+  </div>
+)}
+
     </div>
   );
 };

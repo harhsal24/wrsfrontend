@@ -2,7 +2,8 @@ import React from 'react';
 import Avatar from 'react-avatar';
 import randomColor from 'randomcolor';
 import { FaCheck, FaHourglassStart } from 'react-icons/fa';
-const ReportCard = ({ report }) => {
+import { Link } from 'react-router-dom';
+const ReportCard = ({ report, button,projectName }) => {
   const formatDate = (dateString) => {
     const options = {
       year: 'numeric',
@@ -14,7 +15,6 @@ const ReportCard = ({ report }) => {
     };
     return new Date(dateString).toLocaleString('en-US', options);
   };
-
   const getStatusText = (status) => {
     if (status === 'APPROVED') {
       return 'Approved';
@@ -57,6 +57,7 @@ const ReportCard = ({ report }) => {
     <div className="bg-gray-100 rounded-lg shadow-md p-4  mb-4 md:w-[400px] lg:w-[590px] xl:w-[800px] xl:my-3">
       <div className='flex items-center justify-between'>
 
+      <Link to={`/employeeDetail/${report.employee.employeeId}`} >
       <div className='flex gap-x-2'>
         <Avatar
           name={report.employee.employeeName}
@@ -67,10 +68,13 @@ const ReportCard = ({ report }) => {
           />
       <h4 className="text-lg font-semibold mt-2 mb-2">Created By {report.employee.employeeName}</h4>
       </div>
+      </Link>
+      
       <div>
-      <div className="ml-auto" >{renderActionButton(report.reportStatus)}</div>
+      <div className={`ml-auto ${button ? ' ': 'hidden'}`} >{renderActionButton(report.reportStatus)}</div>
       </div>
           </div>
+      { projectName && <p className='ml-auto'>For : {report.project.projectName } </p>}
       <p className="text-gray-600">At : {formatDate(report.reportCreatedDateTime)}</p>
       <p
         className={`font-semibold ${

@@ -25,14 +25,65 @@ function CreateWeeklyReportPage() {
   const [activity, setActivity] = useState("");
   const [plannedCompletionDate, setPlannedCompletionDate] = useState();
   const [actualCompletionDate, setActualCompletionDate] = useState();
-  const [isSliderOpen, setIsSliderOpen] = useState(true);
-
+  const [isSliderOpen, setIsSliderOpen] = useState(false);
+  const [editIndex, setEditIndex] = useState(-1);
   
   const toggleSlider = () => {
     setIsSliderOpen(!isSliderOpen);
   };
  
  
+  const editReportDetail = (indexToEdit) => {
+    setIsSliderOpen(true)
+    setEditIndex(indexToEdit)
+    const editedDetail = reportDetails[indexToEdit];
+  
+    setDeliverables(editedDetail.deliverables);
+    setNoOfHours(editedDetail.noOfHours);
+    setActivity(editedDetail.activity);
+    setPlannedCompletionDate(editedDetail.plannedCompletionDate);
+    setActualCompletionDate(editedDetail.actualCompletionDate);
+  
+  };
+  
+  const handleSaveEditReport=()=>{
+   
+    if (
+      deliverables === null ||
+      noOfHours === null ||
+      activity === null ||
+      plannedCompletionDate === null ||
+      actualCompletionDate === null ||
+      deliverables === "" ||
+      noOfHours === "" ||
+      activity === "" ||
+      plannedCompletionDate === "" ||
+      actualCompletionDate === ""
+    ) {
+      alert("Please fill in all fields for the new report detail.");
+      return;
+    }
+  
+      // Initialize a new report detail object with input values
+      const updatedReportDetails = {
+        deliverables: deliverables,
+        noOfHours: noOfHours,
+        activity: activity,
+        plannedCompletionDate: plannedCompletionDate,
+        actualCompletionDate: actualCompletionDate,
+      };
+      
+      reportDetails[editIndex]=updatedReportDetails;
+      setEditIndex(-1);
+         // Clear the input values
+    setDeliverables("");
+    setNoOfHours("");
+    setActivity("");
+    setPlannedCompletionDate("");
+    setActualCompletionDate("");
+    setIsSliderOpen(false)
+  }
+
   useEffect(() => {
     async function fetchEmployeeAndProjectDetails() {
       try {
@@ -237,18 +288,18 @@ function CreateWeeklyReportPage() {
         </thead>
         <tbody>
           {reportDetails.map((detail, index) => (
-            <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
+            <tr key={index} className={`text-center ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
               <td className="py-2 px-4 border">{detail.deliverables}</td>
-              <td className="py-2 px-4 border">{detail.plannedCompletionDate}</td>
-              <td className="py-2 px-4 border">{detail.actualCompletionDate}</td>
+              <td className="py-2 px-4 border">{moment(detail.plannedCompletionDate).format("DD-MM-YYYY")}</td>
+              <td className="py-2 px-4 border">{moment(detail.actualCompletionDate).format("DD-MM-YYYY")}</td>
               <td className="py-2 px-4 border">{detail.noOfHours}</td>
               <td className="py-2 px-4 border">{detail.activity}</td>
               <td className="py-2 px-4 border flex  justify-around">
-                {/* <button onClick={() => editReportDetail(index)} className="text-blue-500 hover:text-blue-700">
+                <button onClick={() => editReportDetail(index)} className="text-blue-500 hover:text-blue-700">
                 <RiEdit2Line className="text-blue-500 cursor-pointer" onClick={() => editReportDetail(index)} />
             Edit
 
-                </button> */}
+                </button>
                 <button onClick={() => removeReportDetail(index)} className="ml-2 text-red-500 hover:text-red-700">
                 <RiDeleteBin6Line className="text-red-500 cursor-pointer ml-2" onClick={() => removeReportDetail(index)} /> Remove
                 </button>
@@ -363,13 +414,21 @@ function CreateWeeklyReportPage() {
                 </div>
               </div>
             </div>
-            <button
+            { editIndex !== -1 ?  <button
+            onClick={handleSaveEditReport}
+            
+            className="mt-4 bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-300"
+          >
+            save Report Detail 
+          </button> :<button
               onClick={addReportDetail}
               
               className="mt-4 bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition duration-300"
             >
               Add Report Detail 
             </button>
+           
+            }
             </div>
             </BottomSlider>
 <div className="border p-3 mt-6 max-w-md w-full mx-auto  bg-slate-400 shadow-md  md:max-w-2xl lg:max-w-full">
