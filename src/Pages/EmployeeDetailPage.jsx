@@ -7,18 +7,29 @@ import ProjectCard from './ProjectCard';
 import ReportCard from './ReportCard';
 import { useQuery } from 'react-query';
 import useEmployeeDetailStore from '../store/useEmployeeDetailStore';
+import api from "../api"
 
-const fetchEmployeeDetails = async (employeeId) => {
-  const response = await axios.get(`http://localhost:8080/employees/${employeeId}`);
-  return response.data;
-};
+
 
 const EmployeeDetailPage = () => {
-  
+  const [projects, setProjects] = useState([])
+  const [weeklyReports, setWeeklyReports] = useState([])
+
+  const fetchEmployeeDetails = async (employeeId) => {
+    const response = await api.get(`http://localhost:8080/employees/${employeeId}`);
+    setLedProjects(response.data.ledProjects)
+    setWeeklyReports(response.data.weeklyReports)
+    setProjects(response.data.projects)
+    setWeeklyReports(response.data.weeklyReports)
+    console.log(response.data)
+    return response.data;
+  };
+
+
   const{employeeId}=useParams();
 
-  const projects = useEmployeeDetailStore(state => state.projects);
-  const setProjects = useEmployeeDetailStore(state => state.setProjects);
+  const ledProjects = useEmployeeDetailStore(state => state.ledProjects);
+  const setLedProjects = useEmployeeDetailStore(state => state.setLedProjects);
   const reports = useEmployeeDetailStore(state => state.reports);
   const setReports = useEmployeeDetailStore(state => state.setReports);
 
@@ -58,14 +69,27 @@ const { data: employee, isLoading, isError } = useQuery(['employee', employeeId]
       ) : (
         <p>Loading employee details...</p>
       )}
-{projects.length>0  && 
+{ledProjects.length>0  && 
 (<div>
     TeamLeader in Projects : 
+  {ledProjects && ledProjects.map((project)=>(
+     <ProjectCard
+     key={project.projectId}
+     project={project}
+     forShowDetails={true}
+     showDate={false}
+   />
+  ))}  
+</div>)}
+{projects.length>0  && 
+(<div>
+    Working in Projects : 
   {projects && projects.map((project)=>(
      <ProjectCard
      key={project.projectId}
      project={project}
      forShowDetails={true}
+     showDate={false}
    />
   ))}  
 </div>)}
@@ -73,7 +97,7 @@ const { data: employee, isLoading, isError } = useQuery(['employee', employeeId]
 <div>
     Reports Created are : 
     {
-        reports && reports.map((report)=>(
+        weeklyReports && weeklyReports.map((report)=>(
             <ReportCard key={report.reportId} report={report} button={false} projectName={true} />
         ))
     }

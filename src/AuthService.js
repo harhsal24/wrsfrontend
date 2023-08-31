@@ -1,64 +1,62 @@
+import axios from "axios";
+import jwt_decode from 'jwt-decode';
+import api from "./api"
 
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
+const API_URL="http://localhost:8080"
 
 export const AuthService = {
-    login: async (username, password) => {
-        try {
-          const response = await axios.post(`${API_URL}/login`, { username, password });
-          const { accessToken, refreshToken } = response.data;
-    
-          if (accessToken && refreshToken) {
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('refreshToken', refreshToken);
-          }
-        } catch (error) {
-          console.error('Login failed:', error);
-          throw error;
-        }
-      },
-      logout: () => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-      },
-  getAccessToken() {
-    return localStorage.getItem(ACCESS_TOKEN_KEY);
-  },
-  
-  getRefreshToken() {
-    return localStorage.getItem(REFRESH_TOKEN_KEY);
-  },
-  
-  setTokens(accessToken, refreshToken) {
-    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-  },
+  login: async function(username, password) {
+    try {
+      const response = await axios.post(`${API_URL}/login`, { username, password });
+      const { accessToken, refreshToken } = response.data;
 
-  clearTokens() {
+      if (accessToken && refreshToken) {
+        localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    }
+  },
+  logout: function() {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
   },
-
-  isLoggedIn() {
-    const accessToken = this.getAccessToken();
-    return !!accessToken && !this.isTokenExpired(accessToken);
-  },
-
-  isTokenExpired(token) {
-    const decodedToken = jwt_decode(token);
-    return Date.now() > decodedToken.exp * 1000;
-  },
-  isAuthenticated: () => {
-    const accessToken = AuthService.getAccessToken();
+  getTokenExpiration: function() {
+    const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
     if (accessToken) {
       const decodedToken = jwt_decode(accessToken);
-      return Date.now() < decodedToken.exp * 1000; // Check if token is not expired
+      return decodedToken.exp * 1000; // Convert to milliseconds
     }
-    return false;
+    return 0; // Return 0 if token is not found
   },
-   refreshAccessToken :async () => {
+  getAccessToken : function() {
+    return localStorage.getItem(ACCESS_TOKEN_KEY);
+  },
+  getRefreshToken: function() {
+    return localStorage.getItem(REFRESH_TOKEN_KEY);
+  },
+  setAccessToken: function(accessToken) {
+   return localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+  },
+  setRefreshToken: function(refreshToken) {
+    return localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  },
+  clearTokens: function() {
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+  },
+  isAuthenticated: function() {
+    const accessToken = AuthService.getAccessToken();
+    return !!accessToken;
+  },
+  refreshAccessToken: async function() {
     try {
-      const response = await api.post('/refresh-token', {
+      const response = await axios.post(`${API_URL}/refresh-token`, {
+        accessToken: AuthService.getAccessToken(),
         refreshToken: AuthService.getRefreshToken(),
       });
       if (response && response.data.accessToken) {
@@ -70,5 +68,5 @@ export const AuthService = {
     } catch (error) {
       throw new Error('Access token refresh failed');
     }
-  },
+  }
 };

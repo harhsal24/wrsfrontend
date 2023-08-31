@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import moment from 'moment';
 import { useMutation, useQuery } from 'react-query';
 import { useReportStore } from '../store/useReportStore';
-
+import api from "../api"
 
 
 function EditProjectPage() {
@@ -27,7 +27,7 @@ function EditProjectPage() {
   const setSelectedProjectId = useReportStore(state => state.setSelectedProjectId);
 
   const { data: listRegularEmployees } = useQuery('regularEmployees', async () => {
-    const response = await axios.get('http://localhost:8080/employees/byRole/REGULAR_EMPLOYEE');
+    const response = await api.get('http://localhost:8080/employees/byRole/REGULAR_EMPLOYEE');
     return response.data.map(employee => ({
       value: employee.employeeId,
       label: employee.employeeName
@@ -35,7 +35,7 @@ function EditProjectPage() {
   });
 
   const { data: listTeamLeaders } = useQuery('teamLeaders', async () => {
-    const response = await axios.get('http://localhost:8080/employees/byRole/TEAM_LEADER');
+    const response = await api.get('http://localhost:8080/employees/byRole/TEAM_LEADER');
     return response.data.map(employee => ({
       value: employee.employeeId,
       label: employee.employeeName
@@ -43,7 +43,8 @@ function EditProjectPage() {
   });
 
   const { data: projectDetails } = useQuery(['project', projectId], async () => {
-    const response = await axios.get(`http://localhost:8080/projects/${projectId}`);
+    const response = await api.get(`http://localhost:8080/projects/${projectId}`);
+    console.log(response.data)
     return response.data;
   });
 
@@ -56,7 +57,7 @@ function EditProjectPage() {
   });
 
   const editProjectMutation = useMutation(async (projectData) => {
-    await axios.put(`http://localhost:8080/projects/${projectId}`, projectData);
+    await api.put(`http://localhost:8080/projects/${projectId}`, projectData);
   });
 
   const handleFormSubmit = async (e) => {

@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import moment from "moment";
-
+import { useMutation, useQuery } from "react-query";
+import api from "../api"
+import useUserEmployeeStore from "../store/userEmployeeStore";
 
 function RemarkPage() {
+  const loggedInEmployee = useUserEmployeeStore(state => state.loggedInEmployee);
   const { reportId } = useParams();
 
   const [remark, setRemark] = useState("");
@@ -13,37 +16,55 @@ function RemarkPage() {
     setExpectedActivitiesOfUpcomingWeek,
   ] = useState("");
   
-  const [reportDetails, setReportDetails] = useState([]);
 const [employee, setEmployee] = useState({})
 const [project, setProject] = useState({})
 const [reportDetailsList, setReportDetailsList] = useState([])
 const [reportStatus, setReportStatus] = useState("")
 const [teamLeader, setTeamLeader] = useState({})
 const [employeeName, setEmployeeName] = useState("")
+const [teamLeaderName, setTeamLeaderName] = useState({})
 const [projectName, setProjectName] = useState("")
-  useEffect(() => {
-  // Fetch the report detail using Axios
-  const fetchReportDetail = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8080/reports/${reportId}`);
-      setReportDetails(response.data);
-      setEmployee(response.data.employee)
-      setEmployeeName(response.data.employee.employeeName)
-      setProject(response.data.project)
-      setProjectName(response.data.project.projectName)
-      setReportDetailsList(response.data.reportDetailsList)
-      setReportStatus(response.data.reportStatus)
-      setTeamLeader(response.data.project.teamLeader.employeeName)
-        
-    } catch (error) {
-      console.error('Error fetching report detail:', error);
-    }
-  };
+const [pointsForDiscussion, setPointsForDiscussion] = useState('')
 
-  fetchReportDetail();
-  }, [reportId]);
 
-  
+const fetchReportDetail = async () => {
+  const response = await api.get(`http://localhost:8080/reports/${reportId}`);
+  console.log("current report",response.data)
+  setEmployee(response.data.employee)
+  setEmployeeName(response.data.employee.employeeName)
+  setTeamLeader(response.data.project.teamLeader)
+  setTeamLeaderName(response.data.project.teamLeader.employeeName)
+  setProject(response.data.project)
+  setReportDetailsList(response.data.reportDetailsList)
+  return response.data;
+};
+
+const { data: reportDetails, isLoading, isError } = useQuery(
+  ["reportDetail", reportId],
+  fetchReportDetail
+);
+
+
+const updateReportMutation = useMutation(
+  (updatedReportData) =>
+    api.put(`/reports/${reportId}/employee/${loggedInEmployee.employeeId}`, updatedReportData),
+  {
+    // Add the 'onMutate' option to access 'reportId'
+    onMutate: (updatedReportData) => {
+      const previousData = reportDetails; // Save the previous data for rollback
+      // Update the UI immediately to show optimistic update
+      setReportDetailsList(updatedReportData.reportDetailsList);
+      // Return the data to be used in 'onError' and 'onSettled' callbacks
+      return previousData;
+    },
+    // Add 'onError' to handle errors and rollback on failure
+    onError: (error, variables, previousData) => {
+      console.error("Error updating weekly report:", error);
+      setReportDetailsList(previousData); // Rollback to previous data
+    },
+  }
+);
+
   const isFieldMissing = (fieldValue) => {
     return !fieldValue || fieldValue.trim() === "";
   };
@@ -56,7 +77,8 @@ const [projectName, setProjectName] = useState("")
     if (!remark) missingFields.push("Remark");
     if (!expectedActivitiesOfUpcomingWeek) missingFields.push("Expected Activities of Upcoming Week");
     if (!reportStatus) missingFields.push("Report Status");
-    
+    if(!pointsForDiscussion) missingFields.push("Points for Discussion is empty");
+
     if (missingFields.length > 0) {
       alert(`Please fill in the following fields: ${missingFields.join(", ")}`);
       return;
@@ -72,22 +94,27 @@ const [projectName, setProjectName] = useState("")
       project: {
         projectId: project.projectId,
         projectName:project.projectName,
+        teamLeader:{
+          
+        },
       },
       reportDetailsList: reportDetailsList,
       remark: remark,
       expectedActivitiesOfUpcomingWeek: expectedActivitiesOfUpcomingWeek,
       reportStatus: reportStatus,
+      pointsForDiscussion: pointsForDiscussion,
+      role:loggedInEmployee.role
     };
 
+    console.log(reportData)
     try {
-      // Send the report data to the backend API
-      console.log("reportData");
-      console.log(reportData);
-      await axios.post(`http://localhost:8080/reports`, reportData);
-    } catch (error) {
-      console.error("Error creating weekly report:", error);
-    }
-  };
+      await updateReportMutation.mutateAsync(reportData); 
+   } catch (error) {
+      console.error("Error updating weekly report:", error); 
+   }
+   
+  }
+
 
   return (
     <form
@@ -145,7 +172,7 @@ const [projectName, setProjectName] = useState("")
           type="text"
           id="teamLeaderName"
           name="teamLeaderName"
-          value={teamLeader}
+          value={teamLeaderName}
           className="mt-1 p-2 border rounded-md w-full"
           readOnly
           disabled
@@ -164,7 +191,8 @@ const [projectName, setProjectName] = useState("")
         {/* show data */}
 
 
-    {reportDetailsList.length > 0 ? (
+    {
+    reportDetailsList.length > 0 ? (
       <table className="min-w-full border-2 shadow-xl  border-gray-300 rounded-lg overflow-hidden">
         <thead className="bg-gray-100">
           <tr>
@@ -189,7 +217,8 @@ const [projectName, setProjectName] = useState("")
       </table>
     ) : (
       <p>No report details available.</p>
-    )}
+    )
+    }
 
 
         
@@ -228,6 +257,23 @@ const [projectName, setProjectName] = useState("")
           value={expectedActivitiesOfUpcomingWeek}
           onChange={(e) => setExpectedActivitiesOfUpcomingWeek(e.target.value)}
           className={`mt-1 p-2 border rounded-md w-full ${isFieldMissing(expectedActivitiesOfUpcomingWeek) ? 'border-red-500' : 'border-gray-300'}`}
+
+          />
+      </div>
+      <div className="mb-4">
+        <label
+          htmlFor="pointsForDiscussion"
+          className="block font-medium text-gray-700"
+          >
+          points For Discussion
+        </label>
+        <input
+          type="text"
+          id="pointsForDiscussion"
+          name="pointsForDiscussion"
+          value={pointsForDiscussion}
+          onChange={(e) => setPointsForDiscussion(e.target.value)}
+          className={`mt-1 p-2 border rounded-md w-full ${isFieldMissing(pointsForDiscussion) ? 'border-red-500' : 'border-gray-300'}`}
 
           />
       </div>

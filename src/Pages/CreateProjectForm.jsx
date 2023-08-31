@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from "../api"
 import Select from 'react-select';
 import { useMutation, useQuery } from 'react-query';
 
@@ -19,7 +20,7 @@ function CreateProjectForm({ onSubmit }) {
 
   // Fetch employees using React Query
   const { data: listRegularEmployees } = useQuery('regularEmployees', async () => {
-    const response = await axios.get('http://localhost:8080/employees/byRole/REGULAR_EMPLOYEE');
+    const response = await api.get('/employees/byRole/REGULAR_EMPLOYEE');
     return response.data.map(employee => ({
       value: employee.employeeId,
       label: employee.employeeName
@@ -27,7 +28,7 @@ function CreateProjectForm({ onSubmit }) {
   });
 
   const { data: listTeamLeaders } = useQuery('teamLeaders', async () => {
-    const response = await axios.get('http://localhost:8080/employees/byRole/TEAM_LEADER');
+    const response = await api.get('http://localhost:8080/employees/byRole/TEAM_LEADER');
     return response.data.map(employee => ({
       value: employee.employeeId,
       label: employee.employeeName
@@ -51,14 +52,23 @@ function CreateProjectForm({ onSubmit }) {
       });
       return;
     }
-
-    // Create a project object to submit
     const projectData = {
-      // ...
+      teamLeader: {
+        employeeId: teamLeader.value,
+        employeeName: teamLeader.label
+      },
+      employees: selectedEmployees.map(employee => ({
+        employeeId: employee.value,
+        employeeName: employee.label
+      })),
+      projectId: null, 
+      projectName,
+      startDate:startDate,
+      expectedEndDate: endDate
     };
 
     try {
-      const response = await axios.post('http://localhost:8080/projects', projectData);
+      const response = await api.post('http://localhost:8080/projects', projectData);
       console.log('Project created:', response.data);
       // You can perform additional actions on successful response
     } catch (error) {

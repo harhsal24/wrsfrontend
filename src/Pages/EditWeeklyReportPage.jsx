@@ -8,6 +8,8 @@ import moment from "moment";
 import { useReportStore } from "../store/useReportStore";
 import { useMutation, useQuery } from "react-query";
 import useUserEmployeeStore from "../store/userEmployeeStore";
+import api from "../api"
+
 function EditWeeklyReportPage() {
   const { reportId } = useParams();
   const [employeeName, setEmployeeName] = useState("");
@@ -15,7 +17,7 @@ function EditWeeklyReportPage() {
   const [teamLeaderName, setTeamLeaderName] = useState("");
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(-1);
-
+  const [project, setProject] = useState();
   const [deliverables, setDeliverables] = useState("");
   const [noOfHours, setNoOfHours] = useState("");
   const [activity, setActivity] = useState("");
@@ -24,8 +26,10 @@ function EditWeeklyReportPage() {
   const toggleSlider = () => {
     setIsSliderOpen(!isSliderOpen);
   };
- 
- 
+  const reportDetails = useReportStore((state) => state.reportDetails);
+  const setReportDetails = useReportStore((state) => state.setReportDetails);
+  const [reportStatus, setReportStatus] = useState()
+
   const editReportDetail = (indexToEdit) => {
     setIsSliderOpen(true)
     setEditIndex(indexToEdit)
@@ -36,7 +40,6 @@ function EditWeeklyReportPage() {
     setActivity(editedDetail.activity);
     setPlannedCompletionDate(editedDetail.plannedCompletionDate);
     setActualCompletionDate(editedDetail.actualCompletionDate);
-  
   };
   
   const handleSaveEditReport=()=>{
@@ -77,7 +80,14 @@ function EditWeeklyReportPage() {
     }
 
     const { data: reportData, isLoading, isError } = useQuery(['report', reportId], async () => {
-      const response = await axios.get(`http://localhost:8080/reports/${reportId}`);
+      const response = await api.get(`http://localhost:8080/reports/${reportId}`);
+      // console.log(response.data)
+      setEmployeeName(response.data.employee.employeeName)
+      setProjectName(response.data.project.projectName)
+      setTeamLeaderName(response.data.project.teamLeader.employeeName)
+      setProject(response.data.project)
+      {setReportDetails(response.data.reportDetailsList)}
+      setReportStatus(response.data.reportStatus)
       return response.data;
     });
 
@@ -118,8 +128,17 @@ function EditWeeklyReportPage() {
 
   const loggedInEmployee = useUserEmployeeStore(state => state.loggedInEmployee);
 
+  // Define the useMutation hook within the component
   const editReportMutation = useMutation(async (updatedReportData) => {
-    await axios.put(`http://localhost:8080/reports/${reportId}/employee/${loggedInEmployee.employeeId}`, updatedReportData);
+    try {
+      const response = await api.put(`/reports/${reportId}/employee/${loggedInEmployee.employeeId}`, updatedReportData);
+      console.log("updated response", response);
+      // Handle success if needed
+    } catch (error) {
+      console.error("Error updating report:", error);
+      // Handle error (if needed)
+      throw error;
+    }
   });
 
   const handleFormSubmit = async (e) => {
@@ -127,23 +146,31 @@ function EditWeeklyReportPage() {
 
     const updatedReportData = {
       employee: {
+        employeeId: loggedInEmployee.employeeId,
         employeeName: employeeName,
       },
       project: {
+        projectId: project.projectId,
         projectName: projectName,
+        teamLeader:{
+          employeeId: project.teamLeader.employeeId,
+        employeeName: project.teamLeader.employeeName,
+        }
       },
       reportDetailsList: reportDetails,
       remark: "",
       expectedActivitiesOfUpcomingWeek: "",
-      reportStatus: "",
+      reportStatus: reportStatus,
+      pointsForDiscussion:"",
+      role:loggedInEmployee.role
     };
 
+    console.log("updated values",updatedReportData)
      // Call the mutation function
-     editReportMutation.mutate(updatedReportData);
+     await editReportMutation.mutateAsync(updatedReportData);
   };
 
-  const reportDetails = useReportStore((state) => state.reportDetails);
-const setReportDetails = useReportStore((state) => state.setReportDetails);
+
 
   return (
     <form

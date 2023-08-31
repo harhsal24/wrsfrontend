@@ -7,7 +7,8 @@ import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import BottomSlider from "./BottomSlider";
 import { useReportStore } from "../store/useReportStore";
 import { useQuery } from "react-query";
-
+import api from "../api"
+   
 function CreateWeeklyReportPage() {
   const { employeeId, projectId } = useParams();
   const [employeeName, setEmployeeName] = useState("");
@@ -20,10 +21,11 @@ function CreateWeeklyReportPage() {
   
   const [reportStatus, setReportStatus] = useState("IN_PROGRESS");
   const [teamLeaderName, setTeamLeaderName] = useState("");
-  
+  const[teamLeaderId,setTeamLeaderId]=useState();
   const [reportDetails, setReportDetails] = useState([]);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(-1);
+  const [pointsForDiscussion, setPointsForDiscussion] = useState('')
   
   const toggleSlider = () => {
     setIsSliderOpen(!isSliderOpen);
@@ -84,13 +86,19 @@ function CreateWeeklyReportPage() {
   const { deliverables, noOfHours, activity, plannedCompletionDate, actualCompletionDate, setDeliverables, setNoOfHours, setActivity, setPlannedCompletionDate, setActualCompletionDate } = useReportStore();
 // Fetch employee details
 const employeeQuery = useQuery(['employee', employeeId], async () => {
-  const response = await axios.get(`http://localhost:8080/employees/${employeeId}`);
+  const response = await api.get(`http://localhost:8080/employees/${employeeId}`);
+  // console.log(response.data)
+  setEmployeeName(response.data.name)
   return response.data;
 });
 
 // Fetch project details
 const projectQuery = useQuery(['project', projectId], async () => {
-  const response = await axios.get(`http://localhost:8080/projects/${projectId}`);
+  const response = await api.get(`http://localhost:8080/projects/${projectId}`);
+  // console.log(response.data)
+  setProjectName(response.data.projectName)
+  setTeamLeaderName(response.data.teamLeader.employeeName)
+  setTeamLeaderId(response.data.teamLeader.employeeId)
   return response.data;
 });
 
@@ -164,18 +172,23 @@ const projectQuery = useQuery(['project', projectId], async () => {
       project: {
         projectId: projectId,
         projectName: projectName,
+        teamLeader:{
+          employeeId: teamLeaderId,
+        employeeName: teamLeaderName,
+        }
       },
       reportDetailsList: reportDetails,
-      remark: remark,
-      expectedActivitiesOfUpcomingWeek: expectedActivitiesOfUpcomingWeek,
+      remark: "",
+      expectedActivitiesOfUpcomingWeek: "",
       reportStatus: reportStatus,
+      pointsForDiscussion:"",
     };
-
+ 
     try {
       // Send the report data to the backend API
       console.log("reportData");
       console.log(reportData);
-      await axios.post(`http://localhost:8080/reports`, reportData);
+      await api.post(`http://localhost:8080/reports`, reportData);
     } catch (error) {
       console.error("Error creating weekly report:", error);
     }
@@ -416,7 +429,7 @@ const projectQuery = useQuery(['project', projectId], async () => {
             </div>
             </BottomSlider>
 <div className="border p-3 mt-6 max-w-md w-full mx-auto  bg-slate-400 shadow-md  md:max-w-2xl lg:max-w-full">
-
+{/* 
       <div className="mb-4">
         <label htmlFor="remark" className="block font-medium text-gray-700">
           Remark
@@ -465,7 +478,7 @@ const projectQuery = useQuery(['project', projectId], async () => {
           <option value="IN_PROGRESS">IN_PROGRESS</option>
           <option value="APPROVED">APPROVED</option>
         </select>
-      </div>
+      </div> */}
 
       </div>
       <button

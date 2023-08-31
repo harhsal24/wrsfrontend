@@ -4,18 +4,23 @@ import { Link, useParams } from 'react-router-dom';
 import ReportCard from './ReportCard';
 import ProjectCard from './ProjectCard';
 import { useReportStore } from '../store/useReportStore';
-import { useQuery } from 'react-query';
-
+import { useQuery, useQueryClient } from 'react-query';
+import api from "../api"
 function DashboardPage_SuperAdmin() {
   const { empID } = useParams();
   const setSelectedProjectId = useReportStore(state => state.setSelectedProjectId);
   const selectedProjectId = useReportStore(state => state.selectedProjectId);
 
   const { data: listProjects, error, isLoading } = useQuery(['projects', empID], async () => {
-    const response = await axios.get(`http://localhost:8080/projects/employee/${empID}`);
+    const response = await api.get(`http://localhost:8080/projects`);
     return response.data;
   });
 
+  const queryClient = useQueryClient(); 
+
+  const onDeleteSuccess = () => {
+    queryClient.invalidateQueries(['projects', empID]); // Invalidate the cache for projects
+  };
 
 
   return (
@@ -31,6 +36,7 @@ function DashboardPage_SuperAdmin() {
                   project={project}
                   selected={selectedProjectId === project.projectId}
                   setSelectedProjectId={setSelectedProjectId}
+                  onDeleteSuccess={onDeleteSuccess}
                 />
                 
               ))}
@@ -67,7 +73,7 @@ function DashboardPage_SuperAdmin() {
                         }
                       })
                       .map((report) => (
-                        <ReportCard key={report.reportId} report={report} button={true} />
+                        <ReportCard key={report.reportId} report={report}  />
                       ))}
                       {/* Create Report Button */}
 

@@ -3,6 +3,9 @@ import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
 import ReportCard from './ReportCard';
 import ProjectCard from './ProjectCard';
+import { useQuery } from 'react-query';
+import { useReportStore } from '../store/useReportStore';
+import api from "../api"
 
 function DashboardPage_RegularEmployee() {
   const { empID } = useParams();
@@ -10,7 +13,7 @@ function DashboardPage_RegularEmployee() {
   const { selectedProjectId, setSelectedProjectId } = useReportStore(); 
 
   const { data: listProjects, isLoading, isError } = useQuery(['projects', empID], async () => {
-    const response = await axios.get(`http://localhost:8080/projects/employee/${empID}`);
+    const response = await api.get(`http://localhost:8080/projects/employee/${empID}`);
     return response.data;
   });
 
@@ -66,7 +69,7 @@ function DashboardPage_RegularEmployee() {
                         }
                       })
                       .map((report) => (
-                        <ReportCard key={report.reportId} report={report} button={true} />
+                        <ReportCard key={report.reportId} report={report}  />
                       ))}
                       {/* Create Report Button */}
 
@@ -74,7 +77,7 @@ function DashboardPage_RegularEmployee() {
               ))}
               <div className='flex items-center w-full justify-center'>
 
-                <Link to="/createReport">
+                <Link to={`/createWeeklyReport/${empID}/${selectedProjectId}`}>
     <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
       Create Report
     </button>

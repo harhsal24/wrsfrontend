@@ -4,7 +4,8 @@ import randomColor from 'randomcolor';
 import Modal from './Modal';
 import { MdDelete, MdEdit } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-const ProjectCard = ({ project, selected, setSelectedProjectId ,forShowDetails }) => {
+import api from '../api'
+const ProjectCard = ({ project, selected, setSelectedProjectId ,forShowDetails,onDeleteSuccess,showDate }) => {
   // Generate a random color for the avatar
   const formatDate = (dateString) => {
     const options = {
@@ -18,29 +19,41 @@ const ProjectCard = ({ project, selected, setSelectedProjectId ,forShowDetails }
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
-  const handleDeleteIconClick = () => {
-    setShowDeleteModal(true);
-  };
+  // const handleDeleteIconClick = () => {
+  //   setShowDeleteModal(true);
+  // };
 
+  
+    const handleDeleteConfirm = async () => {
+      if (inputValue === project.projectName) {
+        try {
+          // Call the API to delete the project
+          const response = await api.delete(`/projects/${project.projectId}`);
+  
+          if (response.status === 204) {
+            console.log('Project deleted:', project.projectName);
+            setShowDeleteModal(false);
+            onDeleteSuccess(); // Trigger the project list refresh
+          } else {
+            console.error('Failed to delete project:', project.projectName);
+          }
+        } catch (error) {
+          console.error('Error deleting project:', error);
+        }
+      }
+    };
+  
 
-
-  const handleDeleteConfirm = () => {
-    if (inputValue === project.projectName) {
-      // Delete the project here
-      console.log('Project deleted:', project.projectName);
-      setShowDeleteModal(false);
-      // Call a function to delete the project using an API or other means
-      // You might want to refresh the project list after deletion
-    }
-  };
+  
+  
 
   const avatarColor = randomColor({ seed: project.projectName });
   if(forShowDetails){
    return (<div
     className={`border-2 my-2  bg-white rounded-lg shadow-md p-4 cursor-pointer md:w-[300px] lg:w-[350px] xl:w-[360px] xl:my-3 ${
-        selected ? 'bg-blue-300' : 'hover:bg-gray-100'
+        selected ? 'bg-blue-400' : 'hover:bg-gray-100'
       }`}
-       
+      onClick={() => setSelectedProjectId(project.projectId)} 
     >
       <div className="flex justify-between">
       <Link to={`/projectDetail/${project.projectId}`} >
@@ -67,12 +80,12 @@ const ProjectCard = ({ project, selected, setSelectedProjectId ,forShowDetails }
           style={{ marginRight: '10px' }}
         /> {project.teamLeader.employeeName}</p>
         </Link>
-      <div className='flex'>
+     {showDate && <div className='flex'>
       <p className="text-gray-600"> {formatDate (project.startDate)}</p>
       <p className='px-2'>-</p>
       <p className="text-gray-600"> {formatDate(project.expectedEndDate)}</p>
 
-      </div>
+      </div>}
        {/* Delete Project Modal */}
        <Modal
         open={showDeleteModal}

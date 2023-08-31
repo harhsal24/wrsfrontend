@@ -3,7 +3,9 @@ import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
 import ReportCard from './ReportCard';
 import ProjectCard from './ProjectCard';
-
+import { useQuery } from 'react-query';
+import { useReportStore } from '../store/useReportStore';
+import api from "../api"
 function DashboardPage_TeamLeader() {
   const { empID } = useParams();
  
@@ -12,7 +14,8 @@ function DashboardPage_TeamLeader() {
 
 
  const { data: listProjects, error, isLoading } = useQuery(['projects', empID], async () => {
-    const response = await axios.get(`http://localhost:8080/projects/employee/${empID}`);
+    const response = await api.get(`http://localhost:8080/projects/teamleader/${empID}`);
+    console.log(response.data)
     return response.data;
   });
 
@@ -64,7 +67,7 @@ function DashboardPage_TeamLeader() {
                         }
                       })
                       .map((report) => (
-                        <ReportCard key={report.reportId} report={report} button={false} />
+                        <ReportCard key={report.reportId} report={report}  />
                       ))}
                       {/* Create Report Button */}
 

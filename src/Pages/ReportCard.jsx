@@ -2,10 +2,12 @@ import React from 'react';
 import Avatar from 'react-avatar';
 import randomColor from 'randomcolor';
 import { FaCheck, FaHourglassStart } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEdit } from 'react-icons/fa';
 import useUserEmployeeStore from '../store/userEmployeeStore';
-const ReportCard = ({ report, button,projectName }) => {
+const ReportCard = ({ report, showButton,projectName }) => {
+const navigate=useNavigate();
+
   const loggedInEmployee = useUserEmployeeStore((state) => state.loggedInEmployee);
   const formatDate = (dateString) => {
     const options = {
@@ -21,7 +23,7 @@ const ReportCard = ({ report, button,projectName }) => {
   const getStatusText = (status) => {
     if (status === 'APPROVED') {
       return 'Approved';
-    } else if (status === 'IN_PROCESS') {
+    } else if (status === 'IN_PROGRESS') {
       return 'In Process';
     } else {
       return status;
@@ -56,6 +58,14 @@ const ReportCard = ({ report, button,projectName }) => {
   // Generate a color based on the person's name
   const avatarColor = randomColor({ seed: report.employee.employeeName });
 
+ const handleCheckTeamLeader=()=>{
+  if (
+    loggedInEmployee.role === 'TEAM_LEADER' && report.reportStatus === 'IN_PROGRESS'
+  ) {
+    navigate(`/remark/${report.reportId}`);
+  }
+  }
+
   return (
     <div className="bg-gray-100 rounded-lg shadow-md p-4  mb-4 md:w-[400px] lg:w-[590px] xl:w-[800px] xl:my-3">
       <div className='flex items-center justify-between'>
@@ -74,8 +84,9 @@ const ReportCard = ({ report, button,projectName }) => {
       </Link>
       
       <div>
-      <div className={`ml-auto ${button ? ' ': 'hidden'}`} ><Link to={`/remark/${report.reportId}`}>
-        {renderActionButton(report.reportStatus)}</Link>
+
+     <div className={`ml-auto `} ><div to={`/remark/${report.reportId}`}   onClick={() => handleCheckTeamLeader()}>
+        {renderActionButton(report.reportStatus)}</div>
         </div>
      
       </div>
@@ -88,11 +99,15 @@ const ReportCard = ({ report, button,projectName }) => {
             ? 'text-green-600'
             : 'text-yellow-500'
         }`}
-      >
+      ><div className=' flex gap-x-3 items-center'>
+
         Report Status: {getStatusText(report.reportStatus)}
+      <Link to={`/reportDetail/${report.reportId}`}>
+      <p className='mx-3 text-blue-600 underline pb-1'>View</p></Link>
+      </div>
       </p>
       <div className='flex justify-end'> 
-      {report.reportStatus === 'IN_PROCESS' &&
+      {report.reportStatus === 'IN_PROGRESS' &&
             loggedInEmployee.role === 'REGULAR_EMPLOYEE' && (
               <Link to={`/editWeeklyReport/${report.reportId}`} >
               <FaEdit

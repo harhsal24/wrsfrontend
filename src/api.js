@@ -1,5 +1,3 @@
-// api.js
-
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 import { AuthService } from './AuthService';
@@ -8,10 +6,12 @@ const api = axios.create({
   baseURL: 'http://localhost:8080', 
 });
 
-
+// Intercept requests and handle token refresh
 // Intercept requests and handle token refresh
 api.interceptors.request.use(async (config) => {
+  // console.log('Interceptor config:', config);
   const accessToken = AuthService.getAccessToken();
+  // console.log("accessToken", accessToken);
   if (accessToken) {
     const expiration = AuthService.getTokenExpiration();
     const remainingTime = expiration - Date.now();
@@ -36,5 +36,18 @@ api.interceptors.request.use(async (config) => {
   }
   return config;
 });
+
+
+// Add a request interceptor to include the access token in the headers
+// api.interceptors.request.use(config => {
+//   const accessToken = localStorage.getItem('access_token');
+//   console.log("access token",accessToken)
+//   if (accessToken) {
+//     config.headers['Authorization'] = `Bearer ${accessToken}`;
+//   }
+//   return config;
+// }, error => {
+//   return Promise.reject(error);
+// });
 
 export default api;

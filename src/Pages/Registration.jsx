@@ -4,14 +4,20 @@ import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { useRegistrationStore } from "../store/registrationStore";
 import { useMutation, useQueryClient,useQuery } from "react-query";
+import {AuthService} from './../AuthService'
+import api from "../api"
 
 const fetchAllEmployees = async () => {
-  const response = await axios.get('http://localhost:8080/employees/allEmployees');
-  return response.data;
+  const response = await api.get('http://localhost:8080/employees/allEmployees');
+  // console.log("list of all",response.data)
+  return response.data.map(employee => ({
+    value: employee.employeeId,
+    label: employee.employeeName
+  }));;
 };
 
 const registerUser = async (userData) => {
-  const response = await axios.post('http://localhost:8080/register', userData, {
+  const response = await api.post('http://localhost:8080/register', userData, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -30,7 +36,8 @@ const Registration = () => {
   const [managerId, setManagerId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [token, setToken] = useState("");
+  const [accessToken, setAccessToken] = useState('');
+  const [refreshToken, setRefreshToken] = useState('');
 
   const navigate = useNavigate();
 
@@ -42,8 +49,15 @@ const Registration = () => {
   const registerMutation = useMutation(registerUser, {
     onSuccess: (data) => {
       setSubmittedStatus(true);
-      queryClient.setQueryData('authToken', data);
-      navigate('/dashboard');
+      console.log("data.token ",data.token)
+      queryClient.setQueryData('authToken', data.token); 
+      if (data.role === 'SUPER_ADMIN') {
+        navigate(`/admin/dashboard/${data.empId}`);
+      } else if (data.role === 'TEAM_LEADER') {
+        navigate(`/teamLeader/dashboard/${data.empId}`);
+      } else {
+        navigate(`/employee/dashboard/${data.empId}`);
+      }
     },
     onError: (error) => {
       if (error.response && error.response.status === 400) {
@@ -81,11 +95,11 @@ const Registration = () => {
       password: password.split(""),
       role,
       gender,
-      managerId: managerId ? parseInt(managerId.value) : null, // Use managerId.value
+      managerId: managerId ? parseInt(managerId.value) : null, 
     };
-    console.log(registerBody);
+    // console.log(registerBody);
     try {
-      const response = await axios.post(
+      const response = await api.post(
         "http://localhost:8080/register",
         registerBody,
         {
@@ -94,12 +108,20 @@ const Registration = () => {
           },
         }
       );
-      setToken(response.data.token);
+      // console.log(response.data)
+      setAccessToken(response.data.accessToken)
+      setRefreshToken(response.data.refreshToken)
      
-      if (response.status==200) {
-        navigate("/dashboard");
+      if (accessToken && refreshToken) {
+        console.log("accessToken is ",accessToken ,"refreshToken is ",refreshToken);
+        AuthService.setAccessToken(accessToken)
+        AuthService.setRefreshToken(refreshToken)
       }
-      setErrorMessage("");
+
+      // if (response.status==200) {
+      //   navigate("/dashboard");
+      // }
+    setErrorMessage("");  
       console.log("Registration successful:", response.data);
     } catch (error) {
       if (error.response && error.response.status === 400) {

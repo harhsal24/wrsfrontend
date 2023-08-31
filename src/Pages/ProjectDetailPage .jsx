@@ -5,7 +5,7 @@ import moment from 'moment';
 import Avatar from 'react-avatar';
 import randomColor from 'randomcolor';
 import ReportCard from './ReportCard';
-
+import api from "../api"
 const ProjectDetailPage = () => {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
@@ -13,9 +13,9 @@ const ProjectDetailPage = () => {
   useEffect(() => {
     async function fetchProjectDetails() {
       try {
-        const response = await axios.get(`http://localhost:8080/projects/${projectId}`);
+        const response = await api.get(`http://localhost:8080/projects/${projectId}`);
         setProject(response.data);
-        console.log("project data",response.data)
+        // console.log("project data",response.data)
       } catch (error) {
         console.error('Error fetching project details:', error);
       }

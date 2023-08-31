@@ -4,30 +4,36 @@ import axios from 'axios';
 import Avatar from 'react-avatar';
 import randomColor from 'randomcolor';
 import moment from 'moment';
+import { useQuery } from 'react-query';
+import api from "../api"
+async function fetchReportDetail(reportId) {
+  try {
+    const response = await api.get(`http://localhost:8080/reports/${reportId}`); 
+    return response.data;
+  } catch (error) {
+    throw new Error("Error fetching report detail");
+  }
+}
+
 
 const ReportDetailPage = () => {
-  const { reportId } = useParams(); // Get the report ID from the URL params
+  const { reportId } = useParams(); 
   const [reportData, setReportData] = useState(null);
 
-  useEffect(() => {
-    // Fetch the report detail using Axios
-    const fetchReportDetail = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8080/reports/${reportId}`);
-        setReportData(response.data);
-        console.log("report data ", response.data);
-      } catch (error) {
-        console.error('Error fetching report detail:', error);
-      }
-    };
-
-    fetchReportDetail();
-  }, [reportId]);
+  const { data: reportDetail, isLoading, isError } = useQuery(
+    ["reportDetail", reportId],
+    () => fetchReportDetail(reportId), 
+    {
+      onSuccess: (data) => {
+        setReportData(data);
+      },
+    }
+  );
 
   const getStatusText = (status) => {
  
     if (status === 'IN_PROGRESS') {
-      return 'In Progress';
+      return 'In Process';
     } else if (status === 'APPROVED') {
       return 'Approved';
     } else {
