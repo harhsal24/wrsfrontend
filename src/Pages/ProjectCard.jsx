@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Avatar from 'react-avatar';
 import randomColor from 'randomcolor';
 import Modal from './Modal';
 import { MdDelete, MdEdit } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import api from '../api'
+import { useReportStore } from '../store/useReportStore';
 const ProjectCard = ({ project, selected, setSelectedProjectId ,forShowDetails,onDeleteSuccess,showDate }) => {
+
+  // console.log(selected)
+  const selectedProjectId = useReportStore(state => state.selectedProjectId);
+
   // Generate a random color for the avatar
   const formatDate = (dateString) => {
     const options = {
@@ -43,15 +48,19 @@ const ProjectCard = ({ project, selected, setSelectedProjectId ,forShowDetails,o
       }
     };
   
+const TrueOrNot =(selectedProjectId,projectId)=>{
+  if (selectedProjectId===projectId) {
+       return true;
+      }
+      return false;
+}
 
-  
-  
 
   const avatarColor = randomColor({ seed: project.projectName });
   if(forShowDetails){
    return (<div
     className={`border-2 my-2  bg-white rounded-lg shadow-md p-4 cursor-pointer md:w-[300px] lg:w-[350px] xl:w-[360px] xl:my-3 ${
-        selected ? 'bg-blue-400' : 'hover:bg-gray-100'
+        ' hover:bg-gray-100'
       }`}
       onClick={() => setSelectedProjectId(project.projectId)} 
     >
@@ -119,10 +128,9 @@ const ProjectCard = ({ project, selected, setSelectedProjectId ,forShowDetails,o
   }
   return (
     <div
-    className={`border-2 my-2  bg-white rounded-lg shadow-md p-4 cursor-pointer md:w-[300px] lg:w-[350px] xl:w-[360px] xl:my-3 ${
-        selected ? 'bg-blue-300' : 'hover:bg-gray-100'
-      }`}
+    className={`border-2 my-2  bg-white rounded-lg shadow-md p-4 cursor-pointer md:w-[300px] lg:w-[350px] xl:w-[360px] xl:my-3 hover:bg-gray-100`}
       onClick={() => setSelectedProjectId(project.projectId)} 
+      style={ TrueOrNot(selectedProjectId,project.projectId) ?  {background:`rgb(147 197 253 /1)`}:{}}
     >
       <div className="flex justify-between">
       <Link to={`/projectDetail/${project.projectId}`} >
