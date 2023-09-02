@@ -161,6 +161,11 @@ const projectQuery = useQuery(['project', projectId], async () => {
     return;
   }
 
+  if (reportDetails.length==0) {
+    alert("empty report ")
+    return;
+  }
+
 
     // Construct the data object for the API call
 
@@ -188,16 +193,16 @@ const projectQuery = useQuery(['project', projectId], async () => {
       // Send the report data to the backend API
       console.log("reportData");
       console.log(reportData);
-      await api.post(`http://localhost:8080/reports`, reportData);
+      await api.post(`/reports`, reportData);
     } catch (error) {
       console.error("Error creating weekly report:", error);
     }
   };
 
   return (
-    <form
+    <div
       className="max-w-md w-full mx-auto p-3  shadow-md  md:max-w-2xl lg:max-w-full bg-gray-200"
-      onSubmit={handleFormSubmit}
+      
     >
      <div className="border  lg:pt-3 rounded-lg  lg:flex lg:justify-center lg:items-center lg:gap-8  bg-white xl:gap-24 ">
       
@@ -411,86 +416,36 @@ const projectQuery = useQuery(['project', projectId], async () => {
                 </div>
               </div>
             </div>
-            { editIndex !== -1 ?  <button
+            { editIndex !== -1 ?  <div
             onClick={handleSaveEditReport}
             
             className="mt-4 bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-300"
           >
             save Report Detail 
-          </button> :<button
+          </div> :<div
               onClick={addReportDetail}
               
               className="mt-4 bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition duration-300"
             >
               Add Report Detail 
-            </button>
-           
+            </div>
             }
             </div>
             </BottomSlider>
 <div className="border p-3 mt-6 max-w-md w-full mx-auto  bg-slate-400 shadow-md  md:max-w-2xl lg:max-w-full">
-{/* 
-      <div className="mb-4">
-        <label htmlFor="remark" className="block font-medium text-gray-700">
-          Remark
-        </label>
-        <input
-          type="text"
-          id="remark"
-          name="remark"
-          value={remark}
-          onChange={(e) => setRemark(e.target.value)}
-          className="mt-1 p-2 border rounded-md w-full"
-          />
-      </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="expectedActivitiesOfUpcomingWeek"
-          className="block font-medium text-gray-700"
-          >
-          Expected Activities of Upcoming Week
-        </label>
-        <input
-          type="text"
-          id="expectedActivitiesOfUpcomingWeek"
-          name="expectedActivitiesOfUpcomingWeek"
-          value={expectedActivitiesOfUpcomingWeek}
-          onChange={(e) => setExpectedActivitiesOfUpcomingWeek(e.target.value)}
-          className="mt-1 p-2 border rounded-md w-full"
-          />
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="reportStatus"
-          className="block font-medium text-gray-700"
-          >
-          Report Status
-        </label>
-        <select
-          id="reportStatus"
-          name="reportStatus"
-          value={reportStatus}
-          onChange={(e) => setReportStatus(e.target.value)}
-          className="mt-1 p-2 border rounded-md w-full"
-          >
-          <option value="IN_PROGRESS">IN_PROGRESS</option>
-          <option value="APPROVED">APPROVED</option>
-        </select>
-      </div> */}
 
       </div>
       <button
-        type="submit"
+        // type="submit"
         className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
-        
+        onSubmit={handleFormSubmit}
       >
         Create Weekly Report
       </button>
   {/* Centered Slider Toggle Button */}
   <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-10">
-        <button
+        <div
           onClick={toggleSlider}
           className={`bg-blue-500 text-white py-2 px-4 rounded-tl-full rounded-tr-full hover:bg-blue-600 transition duration-300  ${isSliderOpen ? 'hidden':''} `}
         >
@@ -499,11 +454,11 @@ const projectQuery = useQuery(['project', projectId], async () => {
             ) : (
               <RiArrowUpSLine className="w-6 h-6 inline-block" />
           )}
-        </button>
+        </div>
       </div>
 
 
-    </form>
+    </div>
   );
 }
 
