@@ -1,42 +1,60 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import EmployeeTable from './components/EmployeeTable';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
-import HomePage from './components/HomePage/HomePage';
-import EmployeeLogin from './components/LoginPage/EmployeeLogin';
-import Registration from './Pages/Registration';
-import Success from './components/Pages/Success';
-import ReportInterface from './components/Pages/ReportInterface';
-import EmployeeDetailPrevious from './components/Employee/EmployeeDetailPrevious';
-import EmployeeForm from './components/Employee/EmployeeForm';
-import EmployeeProjectTable from './components/Employee/EmployeeProjectTable';
-import Login from './Pages/Login';
 import CreateProjectForm from './Pages/CreateProjectForm';
+import ReportDetailPage from './Pages/ReportDetailPage';
+import RemarkPage from './Pages/RemarkPage';
+import Login from './Pages/Login';
+import Registration from './Pages/Registration';
+import useUserEmployeeStore from './store/userEmployeeStore';
+import ForgotPassword from './Pages/ForgotPassword'
+import EditProjectPage from './Pages/EditProjectPage'
+ 
+import ProjectDetailPage from './Pages/ProjectDetailPage ' 
+import EmployeeDetailPage from './Pages/EmployeeDetailPage'
+import DashboardPage_RegularEmployee from './Pages/DashboardPage_RegularEmployee';
+import DashboardPage_SuperAdmin from './Pages/DashboardPage_SuperAdmin';
+import DashboardPage_TeamLeader from './Pages/DashboardPage_TeamLeader';
+import CreateWeeklyReportPage from './Pages/CreateWeeklyReportPage';
+import EditWeeklyReportPage from './Pages/EditWeeklyReportPage';
 
 
 
+
+function ProtectedRoute({ element }) {
+  const loggedInEmployee = useUserEmployeeStore(state => state.loggedInEmployee);
+  const navigate = useNavigate();
+
+  if (!loggedInEmployee) {
+    navigate('/login'); 
+    return null;
+  }
+
+  return element
+}
 
 function App() {
-  return (
 
-      <Routes>      
-        <Route path="/" element ={<HomePage/>}/>   
-        <Route path="/employee-login" element={<EmployeeLogin/>}/> 
-        <Route path="/registration" element={<Registration/>}/>     
-        <Route path="/employeetable" element={<EmployeeTable />} />  
-        <Route path="/success" element={<Success/>}/> 
-        <Route path="/reportinterface" element={<ReportInterface/>}/> 
-        <Route path="/employee-details" element={<EmployeeDetailPrevious/>}/> 
-        <Route path="/employeeform" element={<EmployeeForm/>}/> 
-        <Route path="/employee-project-table" element={<EmployeeProjectTable/>}/> 
-        <Route path='/login' element={<Login/>}/>
-        <Route path='/createP' element={<CreateProjectForm/>}/>
-      </Routes>
- 
+    <Routes>
+
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Registration />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+
+<Route path="/createProject" element={<ProtectedRoute element={<CreateProjectForm />} />} />
+  <Route path="/editProject/:projectId" element={<ProtectedRoute element={<EditProjectPage />} />} />
+  <Route path="/createWeeklyReport/:employeeId/:projectId" element={<ProtectedRoute element={<CreateWeeklyReportPage />} />} />
+  <Route path="/editWeeklyReport/:reportId" element={<ProtectedRoute element={<EditWeeklyReportPage />} />} />
+  <Route path="/reportDetail/:reportId" element={<ProtectedRoute element={<ReportDetailPage />} />} />
+  <Route path="/remark/:reportId" element={<ProtectedRoute element={<RemarkPage />} />} />
+  <Route path="/projectDetail/:projectId" element={<ProtectedRoute element={<ProjectDetailPage />} />} />
+  <Route path="/employeeDetail/:employeeId" element={<ProtectedRoute element={<EmployeeDetailPage />} />} />
+  <Route path="/employee/dashboard/:empID" element={<ProtectedRoute element={<DashboardPage_RegularEmployee />} />} />
+  <Route path="/admin/dashboard/:empID" element={<ProtectedRoute element={<DashboardPage_SuperAdmin />} />} />
+  <Route path="/teamLeader/dashboard/:empID" element={<ProtectedRoute element={<DashboardPage_TeamLeader />} />} />
+    </Routes>
+
   );
 }
 
 export default App;
-
-
-
