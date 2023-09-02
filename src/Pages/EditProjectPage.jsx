@@ -23,7 +23,12 @@ function EditProjectPage() {
     setExpectedActivitiesOfUpcomingWeek,
   ] = useState("");
 
+  // teamLeader
 
+  // employeeId
+  
+  // employeeName
+  
   const setSelectedProjectId = useReportStore(state => state.setSelectedProjectId);
 
   const { data: listRegularEmployees } = useQuery('regularEmployees', async () => {
@@ -44,6 +49,17 @@ function EditProjectPage() {
 
   const { data: projectDetails } = useQuery(['project', projectId], async () => {
     const response = await api.get(`http://localhost:8080/projects/${projectId}`);
+    setProjectName(response.data.projectName)
+    setEndDate(response.data.expectedEndDate)
+    setStartDate(response.data.startDate)
+    setTeamLeader({
+      value:response.data.teamLeader.employeeId,
+      label:response.data.teamLeader.employeeName
+    })
+    setSelectedEmployees(response.data.employees.map(employee => ({
+      value: employee.employeeId,
+      label: employee.employeeName
+    })));
     console.log(response.data)
     return response.data;
   });
@@ -75,6 +91,15 @@ function EditProjectPage() {
       return;
     }
 
+     // Check if end date is less than start date
+  if (moment(projectDetails.expectedEndDate).isBefore(projectDetails.startDate)) {
+    setFormErrors({
+      ...formErrors,
+      endDate: true,
+    });
+    return;
+  }
+
     // Update project details
     editProjectMutation.mutateAsync({
       teamLeader: { employeeId: projectDetails.teamLeader.employeeId, employeeName: projectDetails.teamLeader.employeeName },
@@ -87,7 +112,7 @@ function EditProjectPage() {
       startDate: projectDetails.startDate,
       expectedEndDate: projectDetails.expectedEndDate
     });
-
+    showSuccessToast('Project Updated');
     setSelectedProjectId(projectId); 
   };
 

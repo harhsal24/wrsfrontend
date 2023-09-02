@@ -6,11 +6,13 @@ import { MdDelete, MdEdit } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import api from '../api'
 import { useReportStore } from '../store/useReportStore';
-const ProjectCard = ({ project, selected, setSelectedProjectId ,forShowDetails,onDeleteSuccess,showDate }) => {
+const ProjectCard = ({ project,  forShowDetails,onDeleteSuccess,showDate,showDEbuttons }) => {
+
+
 
   // console.log(selected)
   const selectedProjectId = useReportStore(state => state.selectedProjectId);
-
+  const setSelectedProjectId=useReportStore(state=>state.setSelectedProjectId)
   // Generate a random color for the avatar
   const formatDate = (dateString) => {
     const options = {
@@ -59,10 +61,11 @@ const TrueOrNot =(selectedProjectId,projectId)=>{
   const avatarColor = randomColor({ seed: project.projectName });
   if(forShowDetails){
    return (<div
-    className={`border-2 my-2  bg-white rounded-lg shadow-md p-4 cursor-pointer md:w-[300px] lg:w-[350px] xl:w-[360px] xl:my-3 ${
-        ' hover:bg-gray-100'
-      }`}
+    className={`border-2 my-2  bg-white rounded-lg shadow-md p-4 cursor-pointer md:w-[300px] lg:w-[350px] xl:w-[360px] xl:my-3  hover:bg-gray-100`
+      
+    }
       onClick={() => setSelectedProjectId(project.projectId)} 
+      
     >
       <div className="flex justify-between">
       <Link to={`/projectDetail/${project.projectId}`} >
@@ -145,7 +148,8 @@ const TrueOrNot =(selectedProjectId,projectId)=>{
         <h3 className="text-xl font-semibold">{project.projectName}</h3>
       </div>
       </Link>
-     <div className='flex'>
+
+{ showDEbuttons && (     <div className='flex'>
 
           <MdDelete
             className="text-red-600 cursor-pointer mr-2"
@@ -156,7 +160,8 @@ const TrueOrNot =(selectedProjectId,projectId)=>{
           <MdEdit className="text-green-600 cursor-pointer" 
             size={25}/>
             </Link>
-            </div>
+            </div>)}
+
         </div>
         <Link to={`/employeeDetail/${project.teamLeader.employeeId}`} >
           

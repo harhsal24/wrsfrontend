@@ -194,6 +194,7 @@ const projectQuery = useQuery(['project', projectId], async () => {
       console.log("reportData");
       console.log(reportData);
       await api.post(`/reports`, reportData);
+      showSuccessToast('Weekly report created ');
     } catch (error) {
       console.error("Error creating weekly report:", error);
     }

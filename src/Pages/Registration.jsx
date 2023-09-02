@@ -123,6 +123,8 @@ const Registration = () => {
       // }
     setErrorMessage("");  
       console.log("Registration successful:", response.data);
+      showSuccessToast('register successfully');
+     
     } catch (error) {
       if (error.response && error.response.status === 400) {
         setErrorMessage("Registration failed: User with the same email already exists");

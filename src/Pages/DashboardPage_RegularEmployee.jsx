@@ -10,7 +10,7 @@ import api from "../api"
 function DashboardPage_RegularEmployee() {
   const { empID } = useParams();
 
-  const { selectedProjectId, setSelectedProjectId } = useReportStore(); 
+  const selectedProjectId = useReportStore(state => state.selectedProjectId);
 
   const { data: listProjects, isLoading, isError } = useQuery(['projects', empID], async () => {
     const response = await api.get(`http://localhost:8080/projects/employee/${empID}`);
@@ -35,9 +35,8 @@ function DashboardPage_RegularEmployee() {
                 <ProjectCard
                   key={project.projectId}
                   project={project}
-                  selected={selectedProjectId === project.projectId}
-                  setSelectedProjectId={setSelectedProjectId}
-                  forShowDetails={true}
+                  showDEbuttons={false}
+            
                 />
               ))
             )}

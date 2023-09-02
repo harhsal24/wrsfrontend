@@ -168,6 +168,7 @@ function EditWeeklyReportPage() {
     console.log("updated values",updatedReportData)
      // Call the mutation function
      await editReportMutation.mutateAsync(updatedReportData);
+     showSuccessToast('Weekly report edited');
   };
 
 

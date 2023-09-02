@@ -35,7 +35,7 @@ function DashboardPage_SuperAdmin() {
                   key={project.projectId}
                   project={project}
                   selected={selectedProjectId === project.projectId}
-                  setSelectedProjectId={setSelectedProjectId}
+                  showDEbuttons={true}
                   onDeleteSuccess={onDeleteSuccess}
                   forShowDetails={false}
                 />

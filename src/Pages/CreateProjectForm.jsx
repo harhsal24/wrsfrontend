@@ -3,6 +3,8 @@ import axios from 'axios';
 import api from "../api"
 import Select from 'react-select';
 import { useMutation, useQuery } from 'react-query';
+import moment from 'moment';
+import { showSuccessToast } from './showSuccessToast';
 
 function CreateProjectForm({ onSubmit }) {
   const [projectName, setProjectName] = useState('');
@@ -52,6 +54,17 @@ function CreateProjectForm({ onSubmit }) {
       });
       return;
     }
+
+
+     // Check if end date is less than start date
+  if (moment(endDate).isBefore(startDate)) {
+    setFormErrors({
+      ...formErrors,
+      endDate: true,
+    });
+    return;
+  }
+
     const projectData = {
       teamLeader: {
         employeeId: teamLeader.value,
@@ -70,6 +83,7 @@ function CreateProjectForm({ onSubmit }) {
     try {
       const response = await api.post('http://localhost:8080/projects', projectData);
       console.log('Project created:', response.data);
+      showSuccessToast('project created');
       // You can perform additional actions on successful response
     } catch (error) {
       console.error('Error creating project:', error);
