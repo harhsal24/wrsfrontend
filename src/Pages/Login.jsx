@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+
 import { Link, useNavigate } from 'react-router-dom';
 import { useQueryClient } from 'react-query';
 import { useAuthStore, useLoginStore } from '../store/loginStore';
 import useUserEmployeeStore from '../store/userEmployeeStore';
 import {AuthService} from './../AuthService'
+
 
 const Login = () => {
   const [login, setLogin] = useState('');
@@ -25,6 +27,7 @@ const Login = () => {
     setErrorMessage(null);
     
     try {
+
       const response = await axios.post('http://localhost:8080/login', { login, password });
       const { token, empId, role, accessToken, refreshToken } = response.data;
 
@@ -50,6 +53,7 @@ const Login = () => {
           navigate(`/employee/dashboard/${empId}`);
         }
       }
+
     } catch (error) {
       console.error('Login failed:', error);
       setErrorMessage('Invalid login or password');

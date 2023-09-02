@@ -41,6 +41,7 @@ const Registration = () => {
 
   const navigate = useNavigate();
 
+
   const setSubmittedStatus = useRegistrationStore((state) => state.setSubmitted);
   const queryClient = useQueryClient();
 
@@ -57,6 +58,7 @@ const Registration = () => {
         navigate(`/teamLeader/dashboard/${data.empId}`);
       } else {
         navigate(`/employee/dashboard/${data.empId}`);
+
       }
     },
     onError: (error) => {

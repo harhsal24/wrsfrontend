@@ -20,6 +20,7 @@ import EditWeeklyReportPage from './Pages/EditWeeklyReportPage';
 
 
 
+
 function ProtectedRoute({ element }) {
   const loggedInEmployee = useUserEmployeeStore(state => state.loggedInEmployee);
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ function ProtectedRoute({ element }) {
 }
 
 function App() {
-  return (
+
     <Routes>
 
       <Route path="/login" element={<Login />} />
@@ -52,6 +53,7 @@ function App() {
   <Route path="/admin/dashboard/:empID" element={<ProtectedRoute element={<DashboardPage_SuperAdmin />} />} />
   <Route path="/teamLeader/dashboard/:empID" element={<ProtectedRoute element={<DashboardPage_TeamLeader />} />} />
     </Routes>
+
   );
 }
 
