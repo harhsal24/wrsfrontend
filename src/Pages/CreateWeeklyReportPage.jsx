@@ -419,13 +419,13 @@ const projectQuery = useQuery(['project', projectId], async () => {
             { editIndex !== -1 ?  <div
             onClick={handleSaveEditReport}
             
-            className="mt-4 bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-300"
+            className="mt-4 w-fit bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-300"
           >
             save Report Detail 
           </div> :<div
               onClick={addReportDetail}
               
-              className="mt-4 bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition duration-300"
+              className="mt-4 w-fit bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600 transition duration-300"
             >
               Add Report Detail 
             </div>
@@ -439,7 +439,7 @@ const projectQuery = useQuery(['project', projectId], async () => {
       <button
         // type="submit"
         className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
-        onSubmit={handleFormSubmit}
+        onClick={handleFormSubmit}
       >
         Create Weekly Report
       </button>
