@@ -9,6 +9,8 @@ import { useReportStore } from "../store/useReportStore";
 import { useMutation, useQuery } from "react-query";
 import useUserEmployeeStore from "../store/userEmployeeStore";
 import api from "../api"
+import { showSuccessToast } from "./showSuccessToast";
+
 
 function EditWeeklyReportPage() {
   const { reportId } = useParams();
@@ -168,6 +170,7 @@ function EditWeeklyReportPage() {
     console.log("updated values",updatedReportData)
      // Call the mutation function
      await editReportMutation.mutateAsync(updatedReportData);
+     showSuccessToast('Weekly report edited');
   };
 
 

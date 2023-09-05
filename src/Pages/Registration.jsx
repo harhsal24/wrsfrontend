@@ -6,6 +6,8 @@ import { useRegistrationStore } from "../store/registrationStore";
 import { useMutation, useQueryClient,useQuery } from "react-query";
 import {AuthService} from './../AuthService'
 import api from "../api"
+import { showSuccessToast } from "./showSuccessToast";
+
 
 const fetchAllEmployees = async () => {
   const response = await api.get('http://localhost:8080/employees/allEmployees');
@@ -99,7 +101,7 @@ const Registration = () => {
       gender,
       managerId: managerId ? parseInt(managerId.value) : null, 
     };
-    // console.log(registerBody);
+    console.log(registerBody);
     try {
       const response = await api.post(
         "http://localhost:8080/register",
@@ -125,6 +127,8 @@ const Registration = () => {
       // }
     setErrorMessage("");  
       console.log("Registration successful:", response.data);
+      showSuccessToast('register successfully');
+     
     } catch (error) {
       if (error.response && error.response.status === 400) {
         setErrorMessage("Registration failed: User with the same email already exists");

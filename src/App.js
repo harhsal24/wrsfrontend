@@ -17,7 +17,8 @@ import DashboardPage_SuperAdmin from './Pages/DashboardPage_SuperAdmin';
 import DashboardPage_TeamLeader from './Pages/DashboardPage_TeamLeader';
 import CreateWeeklyReportPage from './Pages/CreateWeeklyReportPage';
 import EditWeeklyReportPage from './Pages/EditWeeklyReportPage';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -34,6 +35,10 @@ function ProtectedRoute({ element }) {
 }
 
 function App() {
+
+  return (
+    <div>
+
 
     <Routes>
 
@@ -53,6 +58,9 @@ function App() {
   <Route path="/admin/dashboard/:empID" element={<ProtectedRoute element={<DashboardPage_SuperAdmin />} />} />
   <Route path="/teamLeader/dashboard/:empID" element={<ProtectedRoute element={<DashboardPage_TeamLeader />} />} />
     </Routes>
+
+    <ToastContainer />
+    </div>
 
   );
 }

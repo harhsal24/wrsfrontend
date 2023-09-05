@@ -33,8 +33,7 @@ function DashboardPage_TeamLeader() {
                   key={project.projectId}
                   project={project}
                   selected={selectedProjectId === project.projectId}
-                  setSelectedProjectId={setSelectedProjectId}
-                  forShowDetails={true}
+                  showDEbuttons={false}
                 />
                 
               ))}
