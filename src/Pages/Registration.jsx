@@ -99,7 +99,7 @@ const Registration = () => {
       gender,
       managerId: managerId ? parseInt(managerId.value) : null, 
     };
-    // console.log(registerBody);
+    console.log(registerBody);
     try {
       const response = await api.post(
         "http://localhost:8080/register",

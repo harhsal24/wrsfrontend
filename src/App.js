@@ -18,7 +18,7 @@ import DashboardPage_TeamLeader from './Pages/DashboardPage_TeamLeader';
 import CreateWeeklyReportPage from './Pages/CreateWeeklyReportPage';
 import EditWeeklyReportPage from './Pages/EditWeeklyReportPage';
 import { ToastContainer } from 'react-toastify';
-
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function ProtectedRoute({ element }) {
