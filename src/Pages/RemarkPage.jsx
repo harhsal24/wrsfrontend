@@ -109,6 +109,7 @@ const updateReportMutation = useMutation(
     console.log(reportData)
     try {
       await updateReportMutation.mutateAsync(reportData); 
+      showSuccessToast('Report evaluated');
    } catch (error) {
       console.error("Error updating weekly report:", error); 
    }
