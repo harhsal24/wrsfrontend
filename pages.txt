@@ -1,0 +1,27 @@
+login validation
+
+registration validation
+error 
+user already exits with this email id
+user already exits with this employee id (auto generated yes or No)
+
+error page 
+unauthorize access 
+
+basic responsive and basic validation
+
+register
+
+login
+
+dashboard page
+
+create project
+
+edit project page
+
+create weekly report page 
+
+edit weekly report page 
+
+
