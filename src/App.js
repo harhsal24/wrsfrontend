@@ -21,6 +21,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
+
 function ProtectedRoute({ element }) {
   const loggedInEmployee = useUserEmployeeStore(state => state.loggedInEmployee);
   const navigate = useNavigate();
@@ -34,10 +35,11 @@ function ProtectedRoute({ element }) {
 }
 
 function App() {
+
   return (
     <div>
 
-   
+
     <Routes>
 
       <Route path="/login" element={<Login />} />
@@ -56,8 +58,10 @@ function App() {
   <Route path="/admin/dashboard/:empID" element={<ProtectedRoute element={<DashboardPage_SuperAdmin />} />} />
   <Route path="/teamLeader/dashboard/:empID" element={<ProtectedRoute element={<DashboardPage_TeamLeader />} />} />
     </Routes>
+
     <ToastContainer />
     </div>
+
   );
 }
 
