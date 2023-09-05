@@ -52,10 +52,10 @@ const ProjectDetailPage = () => {
           </div>
           </Link>
           <p className="mb-2">
-            <span className="font-semibold">Start Date:</span> {moment(project.startDate).format("DD-MM-YYYY")}
+            <span className="font-semibold">Start Date:</span> {moment(project.startDate).format("D MMM YY")}
           </p>
           <p className="mb-2">
-            <span className="font-semibold">End Date:</span> {moment(project.expectedEndDate).format("DD-MM-YYYY")}
+            <span className="font-semibold">End Date:</span> {moment(project.expectedEndDate).format("D  MMM YY")}
           </p>
           <div>
           Employees working on Project :
