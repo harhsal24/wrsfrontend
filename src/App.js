@@ -19,6 +19,7 @@ import CreateWeeklyReportPage from './Pages/CreateWeeklyReportPage';
 import EditWeeklyReportPage from './Pages/EditWeeklyReportPage';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import HomePage from './components/HomePage/HomePage';
 
 
 
@@ -41,6 +42,7 @@ function App() {
 
 
     <Routes>
+      <Route path='/' element={<HomePage/>}/>
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Registration />} />
