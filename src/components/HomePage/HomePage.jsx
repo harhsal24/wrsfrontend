@@ -5,11 +5,11 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const handleEmployeeLoginClick = () => {
-    navigate("/employee-login");
+    navigate("/login");
   };
 
   const handleRegisterClick = () => {
-    navigate("/registration");
+    navigate("/register");
   };
 
   return (

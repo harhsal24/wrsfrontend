@@ -72,7 +72,9 @@ function EditProjectPage() {
     selectedEmployees: false
   });
 
+
   const editProjectMutation = useMutation(async (projectData) => {
+    console.log("updated project data",projectData);
     await api.put(`http://localhost:8080/projects/${projectId}`, projectData);
   });
 
@@ -80,40 +82,48 @@ function EditProjectPage() {
     e.preventDefault();
 
     // Basic validation
-    if (!projectDetails.projectName || !projectDetails.startDate || !projectDetails.expectedEndDate || !projectDetails.teamLeader || projectDetails.employees.length === 0) {
-      setFormErrors({
-        projectName: !projectDetails.projectName,
-        startDate: !projectDetails.startDate,
-        endDate: !projectDetails.expectedEndDate,
-        teamLeader: !projectDetails.teamLeader,
-        selectedEmployees: projectDetails.employees.length === 0
-      });
-      return;
-    }
-
-     // Check if end date is less than start date
-  if (moment(projectDetails.expectedEndDate).isBefore(projectDetails.startDate)) {
+  if (!projectName || !startDate || !endDate || !teamLeader || selectedEmployees.length === 0) {
     setFormErrors({
-      ...formErrors,
-      endDate: true,
+      projectName: !projectName,
+      startDate: !startDate,
+      endDate: !endDate,
+      teamLeader: !teamLeader,
+      selectedEmployees: selectedEmployees.length === 0
     });
     return;
   }
 
-    // Update project details
-    editProjectMutation.mutateAsync({
-      teamLeader: { employeeId: projectDetails.teamLeader.employeeId, employeeName: projectDetails.teamLeader.employeeName },
-      employees: projectDetails.employees.map(employee => ({
-        employeeId: employee.employeeId,
-        employeeName: employee.employeeName
-      })),
-      projectId,
-      projectName: projectDetails.projectName,
-      startDate: projectDetails.startDate,
-      expectedEndDate: projectDetails.expectedEndDate
-    });
-    showSuccessToast('Project Updated');
-    setSelectedProjectId(projectId); 
+
+ // Check if end date is less than start date
+ if (moment(endDate).isBefore(startDate)) {
+  setFormErrors({
+    ...formErrors,
+    endDate: true,
+  });
+  return;
+}
+
+const projectData = {
+  teamLeader: {
+    employeeId: teamLeader.value,
+    employeeName: teamLeader.label
+  },
+  employees: selectedEmployees.map(employee => ({
+    employeeId: employee.value,
+    employeeName: employee.label
+  })),
+  projectId:projectId,
+  projectName: projectName,
+  startDate: startDate,
+  expectedEndDate: endDate
+};
+
+
+
+   // Update project details
+  editProjectMutation.mutateAsync(projectData);
+  showSuccessToast('Project Updated');
+  setSelectedProjectId(projectId); 
   };
 
 return (

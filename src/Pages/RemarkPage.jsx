@@ -5,6 +5,7 @@ import moment from "moment";
 import { useMutation, useQuery } from "react-query";
 import api from "../api"
 import useUserEmployeeStore from "../store/userEmployeeStore";
+import { showSuccessToast } from "./showSuccessToast";
 
 function RemarkPage() {
   const loggedInEmployee = useUserEmployeeStore(state => state.loggedInEmployee);
@@ -109,6 +110,7 @@ const updateReportMutation = useMutation(
     console.log(reportData)
     try {
       await updateReportMutation.mutateAsync(reportData); 
+      showSuccessToast('Report evaluated');
    } catch (error) {
       console.error("Error updating weekly report:", error); 
    }

@@ -9,16 +9,23 @@ const ReportCard = ({ report, showButton,projectName }) => {
 const navigate=useNavigate();
 
   const loggedInEmployee = useUserEmployeeStore((state) => state.loggedInEmployee);
+
   const formatDate = (dateString) => {
     const options = {
-      year: 'numeric',
-      month: 'numeric',
       day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
+      month: 'short', // Change 'short' to 'long' if you want the full month name
+      year: 'numeric',
     };
-    return new Date(dateString).toLocaleString('en-US', options);
+    let [month, day, year] = new Date(dateString)
+      .toLocaleDateString('en-US', options)
+      .split(' ');
+    
+      // Remove the last character from the day if it's a comma
+  if (day.endsWith(',')) {
+    day = day.slice(0, -1);
+  }
+
+    return `${day}-${month}-${year}`;
   };
   const getStatusText = (status) => {
     if (status === 'APPROVED') {

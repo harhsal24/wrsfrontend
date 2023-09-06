@@ -61,7 +61,7 @@ const ReportDetailPage = () => {
         {reportData.employee.employeeName}
         </Link>
       </p>
-      <p className="text-base">Created At: {moment(reportData.reportCreatedDateTime).format('DD-MM-YY')}</p>
+      <p className="text-base">Created At: {moment(reportData.reportCreatedDateTime).format('D MMM YY')}</p>
       <p className="text-base">Report Status: {getStatusText(reportData.reportStatus)}</p>
       <p className="text-base" id={reportData.project.projectId}>
         For Project: {reportData.project.projectName}

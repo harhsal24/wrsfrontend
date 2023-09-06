@@ -14,14 +14,34 @@ const ProjectCard = ({ project,  forShowDetails,onDeleteSuccess,showDate,showDEb
   const selectedProjectId = useReportStore(state => state.selectedProjectId);
   const setSelectedProjectId=useReportStore(state=>state.setSelectedProjectId)
   // Generate a random color for the avatar
+  // const formatDate = (dateString) => {
+  //   const options = {
+  //     year: 'numeric',
+  //     month: 'numeric',
+  //     day: 'numeric',
+  //   };
+  //   return new Date(dateString).toLocaleDateString('en-US', options);
+  // };
+
+
   const formatDate = (dateString) => {
     const options = {
-      year: 'numeric',
-      month: 'numeric',
       day: 'numeric',
+      month: 'short', // Change 'short' to 'long' if you want the full month name
+      year: 'numeric',
     };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+    let [month, day, year] = new Date(dateString)
+      .toLocaleDateString('en-US', options)
+      .split(' ');
+    
+      // Remove the last character from the day if it's a comma
+  if (day.endsWith(',')) {
+    day = day.slice(0, -1);
+  }
+
+    return `${day}-${month}-${year}`;
   };
+  
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [inputValue, setInputValue] = useState('');
